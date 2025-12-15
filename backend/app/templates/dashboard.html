@@ -1234,42 +1234,51 @@ function showSection(sectionId) {
 }
 
         // ================= DASHBOARD FUNCTIONS =================
-        async function loadDashboardData() {
-            try {
-                // Load stats for dashboard cards
-                const statsRes = await fetch(`${API_BASE}/stats`, {
-                    headers: getAuthHeaders()
-                });
-                
-                if (statsRes.ok) {
-                    const result = await statsRes.json();
-                    
-                    // Update dashboard cards with real data
-                    document.getElementById('totalVehicles').textContent = result.total_vehicles || '0';
-                    document.getElementById('pendingFines').textContent = result.unpaid_fines || '0';
-                    document.getElementById('unpaidFines').textContent = result.unpaid_fines || '0';
-                    document.getElementById('totalRevenue').textContent = `₹${result.total_amount || '0'}`;
-                    
-                    // Update change indicators
-                    document.querySelectorAll('.card-change').forEach(el => {
-                        if (el.classList.contains('positive')) {
-                            el.textContent = 'Updated just now';
-                        } else if (el.classList.contains('negative')) {
-                            el.textContent = `${result.unpaid_fines || 0} unpaid`;
-                        }
-                    });
-                } else {
-                    console.error('Failed to load stats:', statsRes.status);
+async function loadDashboardData() {
+    try {
+        // Load stats for dashboard cards
+        const statsRes = await fetch(`${API_BASE}/stats`, {
+            headers: getAuthHeaders()
+        });
+        
+        if (statsRes.ok) {
+            const result = await statsRes.json();
+            
+            // Update dashboard cards with real data
+            document.getElementById('totalVehicles').textContent = result.total_vehicles || '0';
+            document.getElementById('pendingFines').textContent = result.unpaid_fines || '0';
+            document.getElementById('unpaidFines').textContent = result.unpaid_fines || '0';
+            document.getElementById('totalRevenue').textContent = `₹${result.total_amount || '0'}`;
+            
+            // Update change indicators
+            const cards = document.querySelectorAll('.card');
+            cards.forEach((card, index) => {
+                const changeEl = card.querySelector('.card-change');
+                if (changeEl) {
+                    if (index === 0) {
+                        changeEl.textContent = `${result.total_vehicles || 0} total`;
+                    } else if (index === 1) {
+                        changeEl.textContent = `${result.unpaid_fines || 0} unpaid`;
+                    } else if (index === 2) {
+                        changeEl.textContent = `₹${result.total_amount || 0} total`;
+                    } else if (index === 3) {
+                        changeEl.textContent = `${result.unpaid_fines || 0} pending`;
+                    }
                 }
-                
-                // Load recent vehicles
-                await loadRecentVehicles();
-                
-            } catch (error) {
-                console.error('Error loading dashboard data:', error);
-                showMessage('searchMessage', 'Error loading dashboard data', 'error');
-            }
+            });
+        } else {
+            console.error('Failed to load stats:', statsRes.status);
         }
+        
+        // Load recent vehicles
+        await loadRecentVehicles();
+        
+    } catch (error) {
+        console.error('Error loading dashboard data:', error);
+        showMessage('searchMessage', 'Error loading dashboard data', 'error');
+    }
+}
+
 
         async function loadRecentVehicles() {
             try {
@@ -1759,95 +1768,90 @@ row.innerHTML = `
         }
 
         // ================= FINES =================
-        async function loadFines() {
-            try {
-                const tableBody = document.getElementById('finesTable');
-                tableBody.innerHTML = `
-                    <tr>
-                        <td colspan="8" style="text-align: center; padding: 20px;">
-                            <i class="fas fa-spinner fa-spin"></i> Loading fines...
-                        </td>
-                    </tr>
-                `;
-                
-                const res = await fetch(`${API_BASE}/fines`, {
-                    headers: getAuthHeaders()
-                });
-                
-                if (!res.ok) {
-                    throw new Error(`HTTP ${res.status}`);
-                }
-                
-                const fines = await res.json();
-                tableBody.innerHTML = '';
-                
-                if (!fines || fines.length === 0) {
-                    tableBody.innerHTML = `
-                        <tr>
-                            <td colspan="8" style="text-align:center; padding:40px; color:#6c757d;">
-                                <i class="fas fa-file-invoice-dollar" style="font-size:40px; margin-bottom:15px; display:block; opacity:0.5;"></i>
-                                No fines found. Great job!
-                            </td>
-                        </tr>
-                    `;
-                    return;
-                }
-                
-                fines.forEach(fine => {
-                    const row = document.createElement('tr');
-                    
-                    // Format violations
-                    let violationsHtml = '';
-                    if (fine.violations && Array.isArray(fine.violations)) {
-                        violationsHtml = fine.violations.map(v => 
-                            `<div>${v.type || 'Violation'}: ₹${v.fine || 0}</div>`
-                        ).join('');
-                    } else {
-                        violationsHtml = 'Traffic Violation: ₹500';
-                    }
-                    
-                    // Format date
-                    const issuedDate = fine.issued_at ? 
-                        new Date(fine.issued_at).toLocaleString() : 'N/A';
-                    
-                    // Status badge
-                    const status = fine.status || 'UNPAID';
-                    const statusClass = status === 'PAID' ? 'status-active' : 'status-expired';
-                    const statusText = status === 'PAID' ? 'Paid' : 'Unpaid';
-                    
-                    row.innerHTML = `
-                        <td>${fine.vehicle_no || 'N/A'}</td>
-                        <td>${fine.owner_name || 'N/A'}</td>
-                        <td>${fine.rfid_tag || 'N/A'}</td>
-                        <td style="max-width: 200px;">${violationsHtml}</td>
-                        <td>₹${fine.total_amount || fine.amount || '0'}</td>
-                        <td>${issuedDate}</td>
-                        <td><span class="status-badge ${statusClass}">${statusText}</span></td>
-                        <td>
-                            <div class="action-buttons">
-                                <button class="action-btn edit" onclick="viewFineDetails('${fine.token || fine._id}')">
-                                    <i class="fas fa-eye"></i>
-                                </button>
-                            </div>
-                        </td>
-                    `;
-                    
-                    tableBody.appendChild(row);
-                });
-                
-            } catch (error) {
-                console.error('Error loading fines:', error);
-                const tableBody = document.getElementById('finesTable');
-                tableBody.innerHTML = `
-                    <tr>
-                        <td colspan="8" style="text-align:center; padding:40px; color:#e74c3c;">
-                            <i class="fas fa-exclamation-triangle" style="font-size:40px; margin-bottom:15px; display:block;"></i>
-                            Error loading fines. Please check your connection and try again.
-                        </td>
-                    </tr>
-                `;
-            }
+async function loadFines() {
+    try {
+        const tableBody = document.getElementById('finesTable');
+        tableBody.innerHTML = `
+            <tr>
+                <td colspan="8" style="text-align: center; padding: 20px;">
+                    <i class="fas fa-spinner fa-spin"></i> Loading fines...
+                </td>
+            </tr>
+        `;
+        
+        const res = await fetch(`${API_BASE}/fines`, {
+            headers: getAuthHeaders()
+        });
+        
+        if (!res.ok) {
+            throw new Error(`HTTP ${res.status}`);
         }
+        
+        const fines = await res.json();
+        tableBody.innerHTML = '';
+        
+        if (!fines || fines.length === 0) {
+            tableBody.innerHTML = `
+                <tr>
+                    <td colspan="8" style="text-align:center; padding:40px; color:#6c757d;">
+                        <i class="fas fa-file-invoice-dollar" style="font-size:40px; margin-bottom:15px; display:block; opacity:0.5;"></i>
+                        No fines found. Great job!
+                    </td>
+                </tr>
+            `;
+            return;
+        }
+        
+        fines.forEach(fine => {
+            const row = document.createElement('tr');
+            
+            // Format violations
+            let violationsHtml = '';
+            if (fine.violations && Array.isArray(fine.violations)) {
+                violationsHtml = fine.violations.map(v => 
+                    `<div class="violation-item">• ${v.type || 'Violation'}: ₹${v.fine || 0}</div>`
+                ).join('');
+            } else {
+                violationsHtml = '<div class="violation-item">• Traffic Violation: ₹500</div>';
+            }
+            
+            // Format date
+            const issuedDate = fine.issued_at ? 
+                new Date(fine.issued_at).toLocaleDateString('en-IN') : 'N/A';
+            
+            // Status badge
+            const status = fine.status || 'UNPAID';
+            const statusClass = status === 'PAID' ? 'status-active' : 'status-expired';
+            const statusText = status === 'PAID' ? 'Paid' : 'Unpaid';
+            
+            row.innerHTML = `
+                <td>${fine.vehicle_no || 'N/A'}</td>
+                <td>${fine.model_no || 'N/A'}</td>
+                <td>${fine.owner_name || 'N/A'}</td>
+                <td>${fine.rfid_tag || 'N/A'}</td>
+                <td style="max-width: 200px; font-size: 12px;">${violationsHtml}</td>
+                <td>₹${fine.total_amount || '0'}</td>
+                <td>${issuedDate}</td>
+                <td><span class="status-badge ${statusClass}">${statusText}</span></td>
+            `;
+            
+            tableBody.appendChild(row);
+        });
+        
+    } catch (error) {
+        console.error('Error loading fines:', error);
+        const tableBody = document.getElementById('finesTable');
+        tableBody.innerHTML = `
+            <tr>
+                <td colspan="8" style="text-align:center; padding:40px; color:#e74c3c;">
+                    <i class="fas fa-exclamation-triangle" style="font-size:40px; margin-bottom:15px; display:block;"></i>
+                    Error loading fines. Please check your connection and try again.
+                </td>
+            </tr>
+        `;
+    }
+}
+
 
         function showAddFineModal() {
             document.getElementById('addFineModal').style.display = 'flex';
@@ -1901,82 +1905,82 @@ row.innerHTML = `
         }
 
         // ================= MONTHLY REPORT =================
-        async function loadMonthlyReport() {
-            try {
-                const tableBody = document.getElementById('reportsTable');
-                tableBody.innerHTML = `
-                    <tr>
-                        <td colspan="6" style="text-align: center; padding: 20px;">
-                            <i class="fas fa-spinner fa-spin"></i> Loading reports...
-                        </td>
-                    </tr>
-                `;
-                
-                const res = await fetch(`${API_BASE}/reports`, {
-                    headers: getAuthHeaders()
-                });
-                
-                if (!res.ok) {
-                    throw new Error(`HTTP ${res.status}`);
-                }
-                
-                const reports = await res.json();
-                tableBody.innerHTML = '';
-                
-                if (!reports || reports.length === 0) {
-                    tableBody.innerHTML = `
-                        <tr>
-                            <td colspan="6" style="text-align:center; padding:40px; color:#6c757d;">
-                                <i class="fas fa-chart-bar" style="font-size:40px; margin-bottom:15px; display:block; opacity:0.5;"></i>
-                                No reports available yet. Reports will be generated at the end of each month.
-                            </td>
-                        </tr>
-                    `;
-                    return;
-                }
-                
-                reports.forEach(report => {
-                    const row = document.createElement('tr');
-                    
-                    // Format month
-                    const month = report._id ? 
-                        `${report._id.month}/${report._id.year}` : 
-                        'N/A';
-                    
-                    row.innerHTML = `
-                        <td>${month}</td>
-                        <td>${report.total_vehicles || '0'}</td>
-                        <td>${report.total_fines || '0'}</td>
-                        <td>₹${report.total_amount || '0'}</td>
-                        <td>${report.unpaid_fines || '0'}</td>
-                        <td>
-                            <div class="action-buttons">
-                                <button class="action-btn edit" onclick="downloadReport('${month}')">
-                                    <i class="fas fa-download"></i>
-                                </button>
-                                <button class="action-btn edit" onclick="viewReportDetails('${month}')">
-                                    <i class="fas fa-eye"></i>
-                                </button>
-                            </div>
-                        </td>
-                    `;
-                    
-                    tableBody.appendChild(row);
-                });
-                
-            } catch (error) {
-                console.error('Error loading monthly report:', error);
-                const tableBody = document.getElementById('reportsTable');
-                tableBody.innerHTML = `
-                    <tr>
-                        <td colspan="6" style="text-align:center; padding:40px; color:#e74c3c;">
-                            <i class="fas fa-exclamation-triangle" style="font-size:40px; margin-bottom:15px; display:block;"></i>
-                            Error loading reports. Please check your connection and try again.
-                        </td>
-                    </tr>
-                `;
-            }
+async function loadMonthlyReport() {
+    try {
+        const tableBody = document.getElementById('reportsTable');
+        tableBody.innerHTML = `
+            <tr>
+                <td colspan="6" style="text-align: center; padding: 20px;">
+                    <i class="fas fa-spinner fa-spin"></i> Loading reports...
+                </td>
+            </tr>
+        `;
+        
+        const res = await fetch(`${API_BASE}/reports`, {
+            headers: getAuthHeaders()
+        });
+        
+        if (!res.ok) {
+            throw new Error(`HTTP ${res.status}`);
         }
+        
+        const reports = await res.json();
+        tableBody.innerHTML = '';
+        
+        if (!reports || reports.length === 0) {
+            tableBody.innerHTML = `
+                <tr>
+                    <td colspan="6" style="text-align:center; padding:40px; color:#6c757d;">
+                        <i class="fas fa-chart-bar" style="font-size:40px; margin-bottom:15px; display:block; opacity:0.5;"></i>
+                        No reports available yet. Reports will be generated at the end of each month.
+                    </td>
+                </tr>
+            `;
+            return;
+        }
+        
+        reports.forEach(report => {
+            const row = document.createElement('tr');
+            
+            // Format month
+            const month = report.month_name || 
+                (report._id ? `${report._id.month}/${report._id.year}` : 'N/A');
+            
+            row.innerHTML = `
+                <td>${month}</td>
+                <td>${report.total_vehicles || '0'}</td>
+                <td>${report.total_fines || '0'}</td>
+                <td>₹${report.total_amount || '0'}</td>
+                <td>${report.unpaid_fines || '0'}</td>
+                <td>
+                    <div class="action-buttons">
+                        <button class="action-btn edit" onclick="downloadReport('${month}')">
+                            <i class="fas fa-download"></i>
+                        </button>
+                        <button class="action-btn edit" onclick="viewReportDetails('${month}')">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                    </div>
+                </td>
+            `;
+            
+            tableBody.appendChild(row);
+        });
+        
+    } catch (error) {
+        console.error('Error loading monthly report:', error);
+        const tableBody = document.getElementById('reportsTable');
+        tableBody.innerHTML = `
+            <tr>
+                <td colspan="6" style="text-align:center; padding:40px; color:#e74c3c;">
+                    <i class="fas fa-exclamation-triangle" style="font-size:40px; margin-bottom:15px; display:block;"></i>
+                    Error loading reports. Please check your connection and try again.
+                </td>
+            </tr>
+        `;
+    }
+}
+
 
         function generateReport() {
             alert('Generating and downloading report...\n\nThis would generate a PDF/Excel report in a real application.');

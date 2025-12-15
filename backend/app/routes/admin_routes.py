@@ -104,18 +104,42 @@ def delete_vehicle(id):
 @admin_bp.route("/stats", methods=["GET"])
 @role_required(["ADMIN", "SUPER_ADMIN"])
 def stats():
+    # Calculate total revenue from PAID fines
+    total_revenue = 0
+    paid_fines = mongo.db.fines.find({"status": "PAID"})
+    for fine in paid_fines:
+        total_revenue += fine.get("total_amount", 0)
+    
+    # Count unpaid fines
+    unpaid_fines_count = mongo.db.fines.count_documents({"status": "UNPAID"})
+    
     return jsonify({
         "total_vehicles": mongo.db.vehicles.count_documents({}),
         "total_fines": mongo.db.fines.count_documents({}),
-        "unpaid_fines": mongo.db.fines.count_documents({"status": "UNPAID"})
+        "unpaid_fines": unpaid_fines_count,
+        "total_amount": total_revenue,
+        "paid_fines": mongo.db.fines.count_documents({"status": "PAID"}),
+        "pending_fines": unpaid_fines_count
     })
-
 
 # ================= FINES =================
 @admin_bp.route("/fines", methods=["GET"])
 @role_required(["ADMIN", "SUPER_ADMIN", "OFFICER"])
 def view_fines():
-    fines = list(mongo.db.fines.find({}, {"_id": 0}))
+    fines = list(mongo.db.fines.find({}))
+    
+    # Convert ObjectId to string and add vehicle details
+    for fine in fines:
+        fine["_id"] = str(fine["_id"])
+        # If vehicle details are missing, fetch from vehicles collection
+        if not fine.get("vehicle_no"):
+            vehicle = mongo.db.vehicles.find_one({"rfid_tag": fine.get("rfid_tag")})
+            if vehicle:
+                fine["vehicle_no"] = vehicle.get("vehicle_no", "N/A")
+                fine["model_no"] = vehicle.get("model_no", "N/A")  # Add model_no
+                fine["owner_name"] = vehicle.get("owner_name", "N/A")
+                fine["mobile_number"] = vehicle.get("mobile_number", "N/A")
+    
     return jsonify(fines)
 
 
