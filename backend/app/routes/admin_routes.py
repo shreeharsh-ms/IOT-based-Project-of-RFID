@@ -506,3 +506,51 @@ def user_login():
 @admin_bp.route("/", methods=["GET"])
 def home_page():
     return render_template("home.html")
+
+
+# ================= PAY FINES =================
+@admin_bp.route("/pay-fines", methods=["POST"])
+def pay_fines():
+    """
+    Mark all unpaid fines for a vehicle as PAID.
+    Expected JSON:
+    {
+        "token": "ACCESS_TOKEN",   # token from user link
+        "payment_method": "upi"    # optional
+    }
+    """
+    data = request.json
+    token = data.get("token")
+    payment_method = data.get("payment_method", "upi")
+
+    if not token:
+        return jsonify({"message": "Token is required"}), 400
+
+    # Find all unpaid fines for this token
+    fines = list(mongo.db.fines.find({"token": token, "status": "UNPAID"}))
+
+    if not fines:
+        return jsonify({"message": "No unpaid fines found for this vehicle"}), 404
+
+    # Calculate total paid amount
+    total_paid = sum(fine.get("total_amount", 0) for fine in fines)
+
+    # Update all fines to PAID
+    mongo.db.fines.update_many(
+        {"token": token, "status": "UNPAID"},
+        {"$set": {"status": "PAID", "paid_at": datetime.now(), "payment_method": payment_method}}
+    )
+
+    # Optional: Send SMS confirmation
+    vehicle = mongo.db.vehicles.find_one({"access_token": token})
+    if vehicle and vehicle.get("mobile_number"):
+        send_sms_via_twilio(
+            vehicle["mobile_number"],
+            f"Payment of ₹{total_paid} for vehicle {vehicle['vehicle_no']} successful. All fines cleared!"
+        )
+
+    return jsonify({
+        "message": "Payment successful",
+        "total_paid": total_paid,
+        "fines_cleared": len(fines)
+    })
