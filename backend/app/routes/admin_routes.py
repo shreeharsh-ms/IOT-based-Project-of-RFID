@@ -358,3 +358,40 @@ def dashboard_page():
 @admin_bp.route("/login-page", methods=["GET"])
 def login_page():
     return render_template("login.html")
+
+
+from werkzeug.security import generate_password_hash
+
+# ================= CREATE ADMIN =================
+@admin_bp.route("/create-admin", methods=["POST"])
+def create_admin():
+    """
+    Create a new admin user.
+    Expected JSON body:
+    {
+        "username": "admin1",
+        "password": "yourpassword",
+        "role": "ADMIN"  # or "SUPER_ADMIN"
+    }
+    """
+    data = request.json
+    username = data.get("username")
+    password = data.get("password")
+    role = data.get("role", "ADMIN")
+
+    if not username or not password:
+        return jsonify({"message": "Username and password are required"}), 400
+
+    existing_admin = mongo.db.admins.find_one({"username": username})
+    if existing_admin:
+        return jsonify({"message": "Admin already exists"}), 400
+
+    password_hash = generate_password_hash(password)
+
+    mongo.db.admins.insert_one({
+        "username": username,
+        "password_hash": password_hash,
+        "role": role
+    })
+
+    return jsonify({"message": f"Admin '{username}' created successfully"})
