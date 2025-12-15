@@ -24,23 +24,23 @@ admin_bp = Blueprint("admin", __name__)
 #             return f(*args, **kwargs)
 #         return wrapper
 #     return decorator
-# def role_required(roles):
-#     def decorator(f):
-#         @wraps(f)
-#         def wrapper(*args, **kwargs):
+def role_required(roles):
+    def decorator(f):
+        @wraps(f)
+        def wrapper(*args, **kwargs):
 
-#             # 🔥 TEMP AUTH BYPASS (DEV MODE)
-#             return f(*args, **kwargs)
+            # 🔥 TEMP AUTH BYPASS (DEV MODE)
+            return f(*args, **kwargs)
 
-#             # ===== RE-ENABLE LATER =====
-#             # token = request.headers.get("Authorization")
-#             # payload = verify_token(token)
-#             # if not payload or payload["role"] not in roles:
-#             #     return jsonify({"message": "Unauthorized"}), 403
-#             # return f(*args, **kwargs)
+            # ===== RE-ENABLE LATER =====
+            # token = request.headers.get("Authorization")
+            # payload = verify_token(token)
+            # if not payload or payload["role"] not in roles:
+            #     return jsonify({"message": "Unauthorized"}), 403
+            # return f(*args, **kwargs)
 
-#         return wrapper
-#     return decorator
+        return wrapper
+    return decorator
 
 
 # ================= LOGIN =================
@@ -347,9 +347,3 @@ def get_vehicle(vehicle_id):
     vehicle["_id"] = str(vehicle["_id"])
     return jsonify(vehicle), 200
 
-
-
-@admin_bp.route("/dashboard", methods=["GET"])
-def dashboard_page():
-    # Optional: pass data if needed
-    return render_template("dashboard.html")
