@@ -450,3 +450,8 @@ def user_login():
     # Redirect URL to fines page with token
     fines_url = f"{request.host_url}api/admin/user/fine?token={token}"
     return jsonify({"token": token, "redirect_url": fines_url})
+
+# Home page (general)
+@admin_bp.route("/", methods=["GET"])
+def home_page():
+    return render_template("home.html")
