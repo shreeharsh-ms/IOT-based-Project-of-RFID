@@ -507,8 +507,6 @@ def user_login():
 def home_page():
     return render_template("home.html")
 
-
-# ================= PAY FINES =================
 @admin_bp.route("/pay-fines", methods=["POST"])
 def pay_fines():
     """
@@ -519,38 +517,61 @@ def pay_fines():
         "payment_method": "upi"    # optional
     }
     """
-    data = request.json
-    token = data.get("token")
-    payment_method = data.get("payment_method", "upi")
+    try:
+        print("\n================ PAY-FINES LOG START ================")
+        
+        data = request.json
+        print("➡️ Request JSON:", data)
 
-    if not token:
-        return jsonify({"message": "Token is required"}), 400
+        token = data.get("token")
+        payment_method = data.get("payment_method", "upi")
+        print(f"➡️ Token: {token}, Payment Method: {payment_method}")
 
-    # Find all unpaid fines for this token
-    fines = list(mongo.db.fines.find({"token": token, "status": "UNPAID"}))
+        if not token:
+            print("❌ Token missing in request")
+            return jsonify({"message": "Token is required"}), 400
 
-    if not fines:
-        return jsonify({"message": "No unpaid fines found for this vehicle"}), 404
+        # Find all unpaid fines for this token
+        fines = list(mongo.db.fines.find({"token": token, "status": "UNPAID"}))
+        print(f"➡️ Unpaid fines found: {len(fines)}")
 
-    # Calculate total paid amount
-    total_paid = sum(fine.get("total_amount", 0) for fine in fines)
+        if not fines:
+            print("❌ No unpaid fines found for this token")
+            return jsonify({"message": "No unpaid fines found for this vehicle"}), 404
 
-    # Update all fines to PAID
-    mongo.db.fines.update_many(
-        {"token": token, "status": "UNPAID"},
-        {"$set": {"status": "PAID", "paid_at": datetime.now(), "payment_method": payment_method}}
-    )
+        # Calculate total paid amount
+        total_paid = sum(fine.get("total_amount", 0) for fine in fines)
+        print(f"➡️ Total amount to be paid: ₹{total_paid}")
 
-    # Optional: Send SMS confirmation
-    vehicle = mongo.db.vehicles.find_one({"access_token": token})
-    if vehicle and vehicle.get("mobile_number"):
-        send_sms_via_twilio(
-            vehicle["mobile_number"],
-            f"Payment of ₹{total_paid} for vehicle {vehicle['vehicle_no']} successful. All fines cleared!"
+        # Update all fines to PAID
+        result = mongo.db.fines.update_many(
+            {"token": token, "status": "UNPAID"},
+            {"$set": {"status": "PAID", "paid_at": datetime.now(), "payment_method": payment_method}}
         )
+        print(f"✅ Updated fines count: {result.modified_count}")
 
-    return jsonify({
-        "message": "Payment successful",
-        "total_paid": total_paid,
-        "fines_cleared": len(fines)
-    })
+        # Optional: Send SMS confirmation
+        vehicle = mongo.db.vehicles.find_one({"access_token": token})
+        if vehicle:
+            print(f"➡️ Vehicle found: {vehicle.get('vehicle_no')}, Mobile: {vehicle.get('mobile_number')}")
+            if vehicle.get("mobile_number"):
+                sms_result = send_sms_via_twilio(
+                    vehicle["mobile_number"],
+                    f"Payment of ₹{total_paid} for vehicle {vehicle['vehicle_no']} successful. All fines cleared!"
+                )
+                print(f"➡️ SMS sent: {sms_result}")
+            else:
+                print("⚠️ Vehicle has no mobile number, SMS not sent")
+        else:
+            print("⚠️ Vehicle not found for this token, SMS not sent")
+
+        print("================ PAY-FINES LOG END ================\n")
+        return jsonify({
+            "message": "Payment successful",
+            "total_paid": total_paid,
+            "fines_cleared": len(fines)
+        })
+
+    except Exception as e:
+        print("❌ ERROR in pay-fines:", str(e))
+        return jsonify({"message": "An error occurred during payment"}), 500
