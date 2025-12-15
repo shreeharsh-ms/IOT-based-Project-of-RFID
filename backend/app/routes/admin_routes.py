@@ -347,3 +347,9 @@ def get_vehicle(vehicle_id):
     vehicle["_id"] = str(vehicle["_id"])
     return jsonify(vehicle), 200
 
+
+
+@admin_bp.route("/dashboard", methods=["GET"])
+def dashboard_page():
+    # Optional: pass data if needed
+    return render_template("dashboard.html")
