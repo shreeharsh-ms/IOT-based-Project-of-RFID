@@ -1,7 +1,9 @@
-from app import create_app  # your Flask factory function
-from mangum import Mangum  # serverless adapter
+import sys
+import os
 
-app = create_app()  # Flask app
+# Ensure backend/app is importable
+sys.path.append(os.path.join(os.path.dirname(__file__), ".."))
 
-# Wrap Flask app with Mangum for serverless deployment
-handler = Mangum(app)
+from app import create_app
+
+app = create_app()  # <-- Vercel looks for THIS
