@@ -687,7 +687,10 @@
             try {
                 showLoading(true);
                 
-                const response = await fetch(`http://127.0.0.1:5001/api/admin/fines/token/${token}`);
+                const response = await fetch(
+  `https://iot-based-project-of-rfid.vercel.app/api/admin/fines/token/${token}`
+);
+
                 
                 if (!response.ok) {
                     throw new Error(`HTTP ${response.status}`);
