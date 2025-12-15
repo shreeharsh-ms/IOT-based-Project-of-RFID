@@ -781,7 +781,7 @@ function validateMobile(mobile) {
                             window.location.href = redirectUrl;
                         } else {
                             // Fallback to default fines page with token
-                            window.location.href = `/user/fine.html?token=${token}`;
+                            window.location.href = `/api/admin/user/fine?token=${token}`;
                         }
                     }, 1500);
                     
@@ -865,7 +865,7 @@ function validateMobile(mobile) {
             if (existingToken) {
                 showMessage('You are already logged in. Redirecting...', 'info');
                 setTimeout(() => {
-                    window.location.href = `/user/fine.html?token=${existingToken}`;
+                    window.location.href = `/api/admin/user/fine?token=${existingToken}`;
                 }, 2000);
             }
             
