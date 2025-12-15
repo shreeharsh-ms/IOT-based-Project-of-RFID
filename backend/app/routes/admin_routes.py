@@ -204,38 +204,6 @@ from datetime import datetime
 
 from twilio.rest import Client
 
-def send_sms_via_twilio(mobile_number, message):
-    """
-    TEMPORARY: Hardcoded Twilio credentials (for testing only)
-    """
-
-    try:
-        # 🔴 TEMPORARY HARDCODED VALUES
-        account_sid = "AC6e105a79612959f9d2cfb7b2d3534984"
-        auth_token = "7caa2a208bcfd17f8352a6e29688c2bc"
-        twilio_number = "+13048026706"
-
-        client = Client(account_sid, auth_token)
-
-        # Ensure phone number format
-        to_number = (
-            f"+91{mobile_number}"
-            if not mobile_number.startswith("+")
-            else mobile_number
-        )
-
-        msg = client.messages.create(
-            body=message,
-            from_=twilio_number,
-            to=to_number
-        )
-
-        print("[Twilio] SMS sent successfully. SID:", msg.sid)
-        return True
-
-    except Exception as e:
-        print("[Twilio ERROR]:", str(e))
-        return False
 
 # User login page (RFID + phone)
 @admin_bp.route("/user/login-page", methods=["GET"])
@@ -254,6 +222,59 @@ def fine_page():
     return render_template("fine.html", token=token)  # Serve fines HTML
 
 
+def send_sms_via_twilio(mobile_number, message):
+    """
+    TEMPORARY: Hardcoded Twilio credentials (for testing only)
+    """
+
+    print("\n================ TWILIO DEBUG START ================")
+
+    try:
+        print("➡️ Raw mobile_number:", mobile_number)
+        print("➡️ Type of mobile_number:", type(mobile_number))
+
+        # 🔴 TEMPORARY HARDCODED VALUES
+        account_sid = "AC6e105a79612959f9d2cfb7b2d3534984"
+        auth_token = "5f944bf943704e6801a3358f4dfb4d7b"
+        twilio_number = "+13048026706"
+
+        print("➡️ Account SID loaded:", account_sid[:6] + "****")
+        print("➡️ Twilio number:", twilio_number)
+
+        # ✅ Ensure mobile number is string
+        mobile_number = str(mobile_number).strip()
+        print("➡️ Mobile number after str():", mobile_number)
+
+        # ✅ Ensure E.164 format
+        if not mobile_number.startswith("+"):
+            to_number = "+91" + mobile_number
+        else:
+            to_number = mobile_number
+
+        print("➡️ Final TO number:", to_number)
+
+        print("➡️ Creating Twilio client...")
+        client = Client(account_sid, auth_token)
+
+        print("➡️ Sending SMS...")
+        msg = client.messages.create(
+            body=message,
+            from_=twilio_number,
+            to=to_number
+        )
+
+        print("✅ SMS SENT SUCCESSFULLY")
+        print("📨 Message SID:", msg.sid)
+        print("================ TWILIO DEBUG END ================\n")
+
+        return True
+
+    except Exception as e:
+        print("❌ TWILIO ERROR OCCURRED")
+        print("❌ Error type:", type(e))
+        print("❌ Error message:", str(e))
+        print("================ TWILIO DEBUG END ================\n")
+        return False
 
 @admin_bp.route("/impose-fine", methods=["POST"])
 def impose_fine():
