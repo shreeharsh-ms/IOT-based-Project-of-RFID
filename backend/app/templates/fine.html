@@ -1,0 +1,953 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fines Payment | Fleet Management</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Roboto:wght@300;400;500&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #4361ee;
+            --primary-dark: #3a56d4;
+            --secondary-color: #3f37c9;
+            --success-color: #4cc9f0;
+            --danger-color: #f72585;
+            --warning-color: #f8961e;
+            --dark-color: #212529;
+            --light-color: #f8f9fa;
+            --gray-color: #6c757d;
+            --gray-light: #e9ecef;
+            --border-radius: 10px;
+            --box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            --box-shadow-hover: 0 8px 24px rgba(0, 0, 0, 0.12);
+            --transition: all 0.3s ease;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #f5f7fb 0%, #e3e8ff 100%);
+            color: var(--dark-color);
+            line-height: 1.6;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        /* Header */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 25px 0;
+            margin-bottom: 30px;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .logo-icon {
+            font-size: 32px;
+            color: var(--primary-color);
+        }
+
+        .logo-text {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--dark-color);
+        }
+
+        .page-title {
+            font-size: 32px;
+            font-weight: 700;
+            color: var(--dark-color);
+            margin-bottom: 10px;
+        }
+
+        .page-subtitle {
+            color: var(--gray-color);
+            font-weight: 400;
+            margin-bottom: 5px;
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 500;
+            margin-left: 15px;
+        }
+
+        .status-active {
+            background-color: rgba(46, 204, 113, 0.15);
+            color: #27ae60;
+        }
+
+        .status-expired {
+            background-color: rgba(231, 76, 60, 0.15);
+            color: #c0392b;
+        }
+
+        .status-warning {
+            background-color: rgba(248, 150, 30, 0.15);
+            color: #d35400;
+        }
+
+        /* Cards */
+        .card {
+            background-color: white;
+            border-radius: var(--border-radius);
+            padding: 30px;
+            margin-bottom: 25px;
+            box-shadow: var(--box-shadow);
+            transition: var(--transition);
+        }
+
+        .card:hover {
+            transform: translateY(-3px);
+            box-shadow: var(--box-shadow-hover);
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid var(--gray-light);
+        }
+
+        .card-title {
+            font-size: 20px;
+            font-weight: 600;
+            color: var(--dark-color);
+        }
+
+        .card-subtitle {
+            color: var(--gray-color);
+            font-size: 14px;
+            margin-top: 5px;
+        }
+
+        /* Fine Card */
+        .fine-card {
+            background: white;
+            border-radius: var(--border-radius);
+            padding: 25px;
+            margin-bottom: 20px;
+            box-shadow: var(--box-shadow);
+            border-left: 4px solid var(--danger-color);
+            transition: var(--transition);
+        }
+
+        .fine-card:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--box-shadow-hover);
+        }
+
+        .fine-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .fine-vehicle {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--dark-color);
+        }
+
+        .fine-date {
+            color: var(--gray-color);
+            font-size: 14px;
+        }
+
+        .fine-amount {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--danger-color);
+        }
+
+        .violation-list {
+            margin-top: 20px;
+            padding: 15px;
+            background: rgba(247, 37, 133, 0.05);
+            border-radius: 8px;
+        }
+
+        .violation-item {
+            display: flex;
+            align-items: center;
+            padding: 10px 0;
+            border-bottom: 1px solid rgba(247, 37, 133, 0.1);
+        }
+
+        .violation-item:last-child {
+            border-bottom: none;
+        }
+
+        .violation-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: rgba(247, 37, 133, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 15px;
+            color: var(--danger-color);
+            font-size: 18px;
+        }
+
+        .violation-details {
+            flex: 1;
+        }
+
+        .violation-type {
+            font-weight: 600;
+            color: var(--dark-color);
+            margin-bottom: 3px;
+        }
+
+        .violation-date {
+            color: var(--gray-color);
+            font-size: 13px;
+        }
+
+        .violation-fine {
+            font-weight: 700;
+            color: var(--danger-color);
+            font-size: 16px;
+        }
+
+        /* Summary Card */
+        .summary-card {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+            color: white;
+            border-radius: var(--border-radius);
+            padding: 30px;
+            margin-bottom: 25px;
+            box-shadow: var(--box-shadow);
+        }
+
+        .summary-title {
+            font-size: 20px;
+            font-weight: 600;
+            margin-bottom: 15px;
+            color: white;
+        }
+
+        .summary-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 12px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .summary-item:last-child {
+            border-bottom: none;
+            font-size: 18px;
+            font-weight: 700;
+            padding-top: 20px;
+        }
+
+        .summary-label {
+            color: rgba(255, 255, 255, 0.9);
+        }
+
+        .summary-value {
+            font-weight: 600;
+        }
+
+        /* Buttons */
+        .btn {
+            padding: 14px 28px;
+            border-radius: var(--border-radius);
+            font-weight: 600;
+            cursor: pointer;
+            border: none;
+            transition: var(--transition);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Poppins', sans-serif;
+            font-size: 16px;
+            width: 100%;
+        }
+
+        .btn i {
+            margin-right: 10px;
+        }
+
+        .btn-primary {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background-color: var(--primary-dark);
+            box-shadow: var(--box-shadow-hover);
+        }
+
+        .btn-success {
+            background-color: #2ecc71;
+            color: white;
+        }
+
+        .btn-success:hover {
+            background-color: #27ae60;
+            box-shadow: var(--box-shadow-hover);
+        }
+
+        .btn-danger {
+            background-color: var(--danger-color);
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background-color: #e11574;
+            box-shadow: var(--box-shadow-hover);
+        }
+
+        .btn-lg {
+            padding: 18px 32px;
+            font-size: 18px;
+        }
+
+        .action-buttons {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 30px;
+        }
+
+        /* Payment Methods */
+        .payment-methods {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin-top: 25px;
+        }
+
+        .payment-method {
+            border: 2px solid var(--gray-light);
+            border-radius: var(--border-radius);
+            padding: 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .payment-method:hover, .payment-method.active {
+            border-color: var(--primary-color);
+            background: rgba(67, 97, 238, 0.05);
+        }
+
+        .payment-icon {
+            font-size: 32px;
+            margin-bottom: 10px;
+            color: var(--primary-color);
+        }
+
+        .payment-name {
+            font-weight: 600;
+            color: var(--dark-color);
+        }
+
+        /* Message */
+        .message {
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 25px;
+            display: flex;
+            align-items: center;
+        }
+
+        .message i {
+            margin-right: 15px;
+            font-size: 24px;
+        }
+
+        .message.success {
+            background-color: rgba(46, 204, 113, 0.15);
+            color: #27ae60;
+            border-left: 4px solid #27ae60;
+        }
+
+        .message.error {
+            background-color: rgba(231, 76, 60, 0.15);
+            color: #c0392b;
+            border-left: 4px solid #c0392b;
+        }
+
+        .message.info {
+            background-color: rgba(52, 152, 219, 0.15);
+            color: #2980b9;
+            border-left: 4px solid #2980b9;
+        }
+
+        .message.warning {
+            background-color: rgba(248, 150, 30, 0.15);
+            color: #d35400;
+            border-left: 4px solid #d35400;
+        }
+
+        /* Loading */
+        .loading {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 60px 20px;
+        }
+
+        .loading-spinner {
+            width: 60px;
+            height: 60px;
+            border: 4px solid var(--gray-light);
+            border-top: 4px solid var(--primary-color);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-bottom: 20px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .container {
+                padding: 0 15px;
+            }
+            
+            .header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 15px;
+            }
+            
+            .page-title {
+                font-size: 28px;
+            }
+            
+            .action-buttons {
+                grid-template-columns: 1fr;
+            }
+            
+            .payment-methods {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .fine-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 10px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .payment-methods {
+                grid-template-columns: 1fr;
+            }
+            
+            .btn {
+                padding: 12px 20px;
+            }
+        }
+
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+        }
+
+        .empty-icon {
+            font-size: 64px;
+            color: var(--gray-light);
+            margin-bottom: 20px;
+        }
+
+        .empty-title {
+            font-size: 24px;
+            font-weight: 600;
+            color: var(--gray-color);
+            margin-bottom: 10px;
+        }
+
+        .empty-text {
+            color: var(--gray-color);
+            max-width: 400px;
+            margin: 0 auto 30px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <div class="logo">
+                <div class="logo-icon">
+                    <i class="fas fa-car"></i>
+                </div>
+                <div>
+                    <div class="logo-text">FleetFines</div>
+                    <div class="page-subtitle">Vehicle Fines Payment Portal</div>
+                </div>
+            </div>
+            <div>
+                <div class="page-subtitle">Token: <span id="tokenDisplay" style="font-weight: 600;"></span></div>
+                <div class="page-subtitle" id="tokenStatus"></div>
+            </div>
+        </div>
+
+        <!-- Loading State -->
+        <div id="loadingState" class="card loading">
+            <div class="loading-spinner"></div>
+            <h3>Loading your fines...</h3>
+            <p>Please wait while we retrieve your fine details.</p>
+        </div>
+
+        <!-- Error Message -->
+        <div id="errorMessage" class="message error" style="display: none;">
+            <i class="fas fa-exclamation-circle"></i>
+            <div>
+                <h3>Error Loading Fines</h3>
+                <p id="errorText"></p>
+            </div>
+        </div>
+
+        <!-- Main Content (Shown when fines are loaded) -->
+        <div id="mainContent" style="display: none;">
+            <!-- Page Title -->
+            <div class="card">
+                <h1 class="page-title">Your Vehicle Fines</h1>
+                <p class="page-subtitle">Review and pay your outstanding fines below</p>
+                <div id="vehicleInfo" style="margin-top: 15px;"></div>
+            </div>
+
+            <!-- Fines List -->
+            <div id="finesList"></div>
+
+            <!-- No Fines State -->
+            <div id="noFinesState" class="empty-state" style="display: none;">
+                <div class="empty-icon">
+                    <i class="fas fa-check-circle"></i>
+                </div>
+                <h2 class="empty-title">No Outstanding Fines</h2>
+                <p class="empty-text">Great news! You don't have any outstanding fines at the moment.</p>
+                <button class="btn btn-primary" onclick="window.location.href='/'">
+                    <i class="fas fa-home"></i> Return to Home
+                </button>
+            </div>
+
+            <!-- Payment Summary -->
+            <div id="paymentSummary" style="display: none;">
+                <div class="summary-card">
+                    <h2 class="summary-title">Payment Summary</h2>
+                    <div class="summary-item">
+                        <span class="summary-label">Total Fines:</span>
+                        <span class="summary-value" id="totalFinesCount">0</span>
+                    </div>
+                    <div class="summary-item">
+                        <span class="summary-label">Unpaid Fines:</span>
+                        <span class="summary-value" id="unpaidFinesCount">0</span>
+                    </div>
+                    <div class="summary-item">
+                        <span class="summary-label">Total Amount:</span>
+                        <span class="summary-value">₹<span id="totalAmount">0</span></span>
+                    </div>
+                    <div class="summary-item">
+                        <span class="summary-label">Amount Payable:</span>
+                        <span class="summary-value">₹<span id="totalUnpaidAmount">0</span></span>
+                    </div>
+                </div>
+
+                <!-- Payment Methods -->
+                <div class="card">
+                    <h2 class="card-title">Select Payment Method</h2>
+                    <p class="card-subtitle">Choose your preferred payment method</p>
+                    
+                    <div class="payment-methods">
+                        <div class="payment-method active" onclick="selectPaymentMethod('upi')">
+                            <div class="payment-icon">
+                                <i class="fas fa-mobile-alt"></i>
+                            </div>
+                            <div class="payment-name">UPI</div>
+                        </div>
+                        <div class="payment-method" onclick="selectPaymentMethod('card')">
+                            <div class="payment-icon">
+                                <i class="fas fa-credit-card"></i>
+                            </div>
+                            <div class="payment-name">Card</div>
+                        </div>
+                        <div class="payment-method" onclick="selectPaymentMethod('netbanking')">
+                            <div class="payment-icon">
+                                <i class="fas fa-university"></i>
+                            </div>
+                            <div class="payment-name">Net Banking</div>
+                        </div>
+                        <div class="payment-method" onclick="selectPaymentMethod('wallet')">
+                            <div class="payment-icon">
+                                <i class="fas fa-wallet"></i>
+                            </div>
+                            <div class="payment-name">Wallet</div>
+                        </div>
+                    </div>
+
+                    <div class="action-buttons">
+                        <button class="btn btn-success btn-lg" onclick="initiatePayment()">
+                            <i class="fas fa-lock"></i> Pay Securely Now
+                        </button>
+                        <button class="btn btn-primary" onclick="downloadReceipt()">
+                            <i class="fas fa-download"></i> Download Invoice
+                        </button>
+                        <button class="btn" style="background: var(--gray-light);" onclick="window.location.href='/'">
+                            <i class="fas fa-arrow-left"></i> Back to Home
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Information Card -->
+            <div class="card">
+                <h2 class="card-title"><i class="fas fa-info-circle" style="color: var(--primary-color); margin-right: 10px;"></i> Important Information</h2>
+                <div style="margin-top: 15px;">
+                    <div style="display: flex; align-items: flex-start; margin-bottom: 15px;">
+                        <i class="fas fa-clock" style="color: var(--warning-color); margin-right: 10px; margin-top: 3px;"></i>
+                        <div>
+                            <strong>Payment Deadline:</strong> Fines must be paid within 30 days of issuance to avoid additional penalties.
+                        </div>
+                    </div>
+                    <div style="display: flex; align-items: flex-start; margin-bottom: 15px;">
+                        <i class="fas fa-shield-alt" style="color: var(--success-color); margin-right: 10px; margin-top: 3px;"></i>
+                        <div>
+                            <strong>Secure Payment:</strong> All payments are processed through secure, encrypted channels.
+                        </div>
+                    </div>
+                    <div style="display: flex; align-items: flex-start;">
+                        <i class="fas fa-file-invoice" style="color: var(--primary-color); margin-right: 10px; margin-top: 3px;"></i>
+                        <div>
+                            <strong>Receipt:</strong> A digital receipt will be sent to your registered email and mobile number upon successful payment.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Success Message -->
+        <div id="successMessage" class="message success" style="display: none;">
+            <i class="fas fa-check-circle"></i>
+            <div>
+                <h3>Payment Successful!</h3>
+                <p>Your payment has been processed successfully. You will receive a confirmation shortly.</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Get token from URL
+        const urlParams = new URLSearchParams(window.location.search);
+        const token = urlParams.get("token");
+        let finesData = null;
+        let selectedPaymentMethod = 'upi';
+
+        // Display token in header
+        document.getElementById('tokenDisplay').textContent = token || 'Not provided';
+
+        // Initialize page
+        document.addEventListener('DOMContentLoaded', function() {
+            if (!token) {
+                showError('Invalid or missing token. Please check your payment link.');
+                return;
+            }
+            
+            loadFines();
+        });
+
+        // Load fines from API
+        async function loadFines() {
+            try {
+                showLoading(true);
+                
+                const response = await fetch(`http://127.0.0.1:5001/api/admin/fines/token/${token}`);
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}`);
+                }
+                
+                const data = await response.json();
+                
+                if (data.message) {
+                    if (data.message.includes("Invalid") || data.message.includes("expired")) {
+                        showError(data.message);
+                    } else {
+                        showNoFines();
+                    }
+                    return;
+                }
+                
+                finesData = data;
+                displayFines(data);
+                
+            } catch (error) {
+                console.error('Error loading fines:', error);
+                showError('Unable to load fines. Please check your internet connection and try again.');
+            } finally {
+                showLoading(false);
+            }
+        }
+
+        // Display fines
+        function displayFines(data) {
+            const finesList = document.getElementById('finesList');
+            const paymentSummary = document.getElementById('paymentSummary');
+            const mainContent = document.getElementById('mainContent');
+            
+            if (!data.fines || data.fines.length === 0) {
+                showNoFines();
+                return;
+            }
+            
+            // Show main content
+            mainContent.style.display = 'block';
+            
+            // Clear fines list
+            finesList.innerHTML = '';
+            
+            let totalUnpaidAmount = 0;
+            let unpaidCount = 0;
+            
+            // Display each fine
+            data.fines.forEach((fine, index) => {
+                totalUnpaidAmount += fine.total_amount || 0;
+                if (fine.status === 'UNPAID') unpaidCount++;
+                
+                const fineCard = document.createElement('div');
+                fineCard.className = 'fine-card';
+                
+                // Format date
+                const issuedDate = fine.issued_at ? 
+                    new Date(fine.issued_at).toLocaleDateString('en-IN', {
+                        day: 'numeric',
+                        month: 'long',
+                        year: 'numeric',
+                        hour: '2-digit',
+                        minute: '2-digit'
+                    }) : 'Date not available';
+                
+                // Create violations HTML
+                let violationsHTML = '';
+                if (fine.violations && Array.isArray(fine.violations)) {
+                    violationsHTML = '<div class="violation-list">';
+                    fine.violations.forEach(violation => {
+                        violationsHTML += `
+                            <div class="violation-item">
+                                <div class="violation-icon">
+                                    <i class="fas fa-exclamation-triangle"></i>
+                                </div>
+                                <div class="violation-details">
+                                    <div class="violation-type">${violation.type || 'Violation'}</div>
+                                    ${violation.expired_on ? `<div class="violation-date">Expired: ${new Date(violation.expired_on).toLocaleDateString()}</div>` : ''}
+                                </div>
+                                <div class="violation-fine">₹${violation.fine || 0}</div>
+                            </div>
+                        `;
+                    });
+                    violationsHTML += '</div>';
+                }
+                
+                fineCard.innerHTML = `
+                    <div class="fine-header">
+                        <div>
+                            <div class="fine-vehicle">${fine.vehicle_no || 'Unknown Vehicle'}</div>
+                            <div class="fine-date">Issued: ${issuedDate}</div>
+                        </div>
+                        <div class="fine-amount">₹${fine.total_amount || 0}</div>
+                    </div>
+                    
+                    <div style="display: flex; align-items: center; margin-bottom: 15px;">
+                        <div style="flex: 1;">
+                            <div style="color: var(--gray-color); font-size: 14px;">Owner</div>
+                            <div style="font-weight: 600;">${fine.owner_name || 'N/A'}</div>
+                        </div>
+                        <div style="flex: 1;">
+                            <div style="color: var(--gray-color); font-size: 14px;">RFID Tag</div>
+                            <div style="font-weight: 600;">${fine.rfid_tag || 'N/A'}</div>
+                        </div>
+                        <div style="flex: 1;">
+                            <div style="color: var(--gray-color); font-size: 14px;">Status</div>
+                            <span class="status-badge ${fine.status === 'PAID' ? 'status-active' : 'status-expired'}">
+                                ${fine.status === 'PAID' ? 'Paid' : 'Unpaid'}
+                            </span>
+                        </div>
+                    </div>
+                    
+                    <div>
+                        <div style="font-weight: 600; margin-bottom: 10px; color: var(--dark-color);">Violations:</div>
+                        ${violationsHTML}
+                    </div>
+                `;
+                
+                finesList.appendChild(fineCard);
+            });
+            
+            // Update payment summary
+            document.getElementById('totalFinesCount').textContent = data.fines.length;
+            document.getElementById('unpaidFinesCount').textContent = unpaidCount;
+            document.getElementById('totalAmount').textContent = data.fines.reduce((sum, fine) => sum + (fine.total_amount || 0), 0);
+            document.getElementById('totalUnpaidAmount').textContent = totalUnpaidAmount;
+            
+            // Show payment summary if there are unpaid fines
+            if (unpaidCount > 0) {
+                paymentSummary.style.display = 'block';
+                document.getElementById('tokenStatus').innerHTML = `
+                    <span class="status-badge status-expired">${unpaidCount} unpaid fine(s)</span>
+                `;
+            } else {
+                paymentSummary.style.display = 'none';
+                document.getElementById('tokenStatus').innerHTML = `
+                    <span class="status-badge status-active">All fines paid</span>
+                `;
+            }
+            
+            // Update vehicle info if available
+            if (data.fines.length > 0) {
+                const firstFine = data.fines[0];
+                document.getElementById('vehicleInfo').innerHTML = `
+                    <div style="display: flex; gap: 30px; flex-wrap: wrap;">
+                        <div>
+                            <div style="color: var(--gray-color); font-size: 14px;">Vehicle</div>
+                            <div style="font-weight: 600; font-size: 18px;">${firstFine.vehicle_no || 'N/A'}</div>
+                        </div>
+                        <div>
+                            <div style="color: var(--gray-color); font-size: 14px;">Owner</div>
+                            <div style="font-weight: 600;">${firstFine.owner_name || 'N/A'}</div>
+                        </div>
+                        <div>
+                            <div style="color: var(--gray-color); font-size: 14px;">Mobile</div>
+                            <div style="font-weight: 600;">${firstFine.mobile_number || 'N/A'}</div>
+                        </div>
+                    </div>
+                `;
+            }
+        }
+
+        // Show loading state
+        function showLoading(show) {
+            document.getElementById('loadingState').style.display = show ? 'flex' : 'none';
+        }
+
+        // Show error message
+        function showError(message) {
+            document.getElementById('errorText').textContent = message;
+            document.getElementById('errorMessage').style.display = 'flex';
+            document.getElementById('loadingState').style.display = 'none';
+        }
+
+        // Show no fines state
+        function showNoFines() {
+            document.getElementById('noFinesState').style.display = 'block';
+            document.getElementById('mainContent').style.display = 'block';
+            document.getElementById('tokenStatus').innerHTML = `
+                <span class="status-badge status-active">No fines</span>
+            `;
+        }
+
+        // Select payment method
+        function selectPaymentMethod(method) {
+            selectedPaymentMethod = method;
+            
+            // Update UI
+            document.querySelectorAll('.payment-method').forEach(el => {
+                el.classList.remove('active');
+            });
+            event.currentTarget.classList.add('active');
+        }
+
+        // Initiate payment
+        function initiatePayment() {
+            const totalAmount = document.getElementById('totalUnpaidAmount').textContent;
+            
+            // Show confirmation
+            const confirmed = confirm(`Proceed to pay ₹${totalAmount} via ${selectedPaymentMethod.toUpperCase()}?`);
+            
+            if (confirmed) {
+                // In a real app, this would integrate with Razorpay/Stripe/UPI
+                // For demo purposes, we'll simulate payment
+                simulatePayment();
+            }
+        }
+
+        // Simulate payment (for demo)
+        function simulatePayment() {
+            const paymentBtn = document.querySelector('.btn-success');
+            const originalText = paymentBtn.innerHTML;
+            
+            // Show processing state
+            paymentBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing Payment...';
+            paymentBtn.disabled = true;
+            
+            // Simulate API call delay
+            setTimeout(() => {
+                // Show success message
+                document.getElementById('successMessage').style.display = 'flex';
+                
+                // Reset button
+                paymentBtn.innerHTML = originalText;
+                paymentBtn.disabled = false;
+                
+                // Scroll to success message
+                document.getElementById('successMessage').scrollIntoView({ behavior: 'smooth' });
+                
+                // Reload fines after 3 seconds to show updated status
+                setTimeout(() => {
+                    loadFines();
+                }, 3000);
+                
+            }, 2000);
+        }
+
+        // Download receipt
+        function downloadReceipt() {
+            if (!finesData) {
+                alert('No fine data available.');
+                return;
+            }
+            
+            alert('Receipt download would be implemented with:\n' +
+                  '1. PDF generation backend\n' +
+                  '2. Razorpay/Stripe receipt\n' +
+                  '3. Email delivery to registered email');
+            
+            // In a real app, this would download a PDF
+            // window.open(`/api/generate-receipt?token=${token}`, '_blank');
+        }
+
+        // Show help
+        function showHelp() {
+            alert('Need help?\n\n' +
+                  '1. Contact Support: support@fleetfines.com\n' +
+                  '2. Call: 1800-XXX-XXXX\n' +
+                  '3. Visit: www.fleetfines.com/help');
+        }
+    </script>
+</body>
+</html>

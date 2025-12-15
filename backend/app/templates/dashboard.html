@@ -1,0 +1,2020 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vehicle Admin Dashboard | Fleet Management</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Roboto:wght@300;400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../css/style.css">
+    <style>
+        :root {
+            --primary-color: #4361ee;
+            --primary-dark: #3a56d4;
+            --secondary-color: #3f37c9;
+            --success-color: #4cc9f0;
+            --danger-color: #f72585;
+            --warning-color: #f8961e;
+            --dark-color: #212529;
+            --light-color: #f8f9fa;
+            --gray-color: #6c757d;
+            --gray-light: #e9ecef;
+            --border-radius: 10px;
+            --box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            --box-shadow-hover: 0 8px 24px rgba(0, 0, 0, 0.12);
+            --transition: all 0.3s ease;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #f5f7fb;
+            color: var(--dark-color);
+            line-height: 1.6;
+        }
+
+        .container {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* Sidebar Navigation */
+        .sidebar {
+            width: 260px;
+            background: linear-gradient(180deg, #2d3748 0%, #1a202c 100%);
+            color: white;
+            padding: 25px 0;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
+            z-index: 100;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            padding: 0 25px 30px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            margin-bottom: 30px;
+        }
+
+        .logo-icon {
+            font-size: 28px;
+            margin-right: 15px;
+            color: var(--success-color);
+        }
+
+        .logo-text {
+            font-size: 22px;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+        }
+
+        .nav-links {
+            list-style: none;
+            flex: 1;
+        }
+
+        .nav-links li {
+            margin-bottom: 5px;
+        }
+
+        .nav-links a {
+            display: flex;
+            align-items: center;
+            padding: 15px 25px;
+            color: rgba(255, 255, 255, 0.8);
+            text-decoration: none;
+            font-weight: 500;
+            transition: var(--transition);
+            border-left: 4px solid transparent;
+        }
+
+        .nav-links a:hover, .nav-links a.active {
+            background-color: rgba(255, 255, 255, 0.05);
+            color: white;
+            border-left-color: var(--success-color);
+        }
+
+        .nav-links i {
+            margin-right: 15px;
+            font-size: 18px;
+            width: 24px;
+            text-align: center;
+        }
+
+        .user-info {
+            padding: 20px 25px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            align-items: center;
+        }
+
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: var(--primary-color);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 12px;
+            font-weight: 600;
+        }
+
+        .user-name {
+            font-weight: 500;
+        }
+
+        .user-role {
+            font-size: 13px;
+            color: rgba(255, 255, 255, 0.6);
+        }
+
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            padding: 30px;
+            overflow-y: auto;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+
+        .page-title {
+            font-size: 28px;
+            font-weight: 700;
+            color: var(--dark-color);
+        }
+
+        .page-subtitle {
+            color: var(--gray-color);
+            font-weight: 400;
+            margin-top: 5px;
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 15px;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border-radius: var(--border-radius);
+            font-weight: 600;
+            cursor: pointer;
+            border: none;
+            transition: var(--transition);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        .btn i {
+            margin-right: 8px;
+        }
+
+        .btn-primary {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background-color: var(--primary-dark);
+            box-shadow: var(--box-shadow-hover);
+        }
+
+        .btn-success {
+            background-color: var(--success-color);
+            color: white;
+        }
+
+        .btn-success:hover {
+            background-color: #3ab4d8;
+            box-shadow: var(--box-shadow-hover);
+        }
+
+        .btn-danger {
+            background-color: var(--danger-color);
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background-color: #e11574;
+            box-shadow: var(--box-shadow-hover);
+        }
+
+        .btn-outline {
+            background-color: transparent;
+            color: var(--primary-color);
+            border: 2px solid var(--primary-color);
+        }
+
+        .btn-outline:hover {
+            background-color: rgba(67, 97, 238, 0.1);
+        }
+
+        /* Cards */
+        .cards-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+            gap: 25px;
+            margin-bottom: 40px;
+        }
+
+        .card {
+            background-color: white;
+            border-radius: var(--border-radius);
+            padding: 25px;
+            box-shadow: var(--box-shadow);
+            transition: var(--transition);
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--box-shadow-hover);
+        }
+
+        .card-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 20px;
+            font-size: 24px;
+        }
+
+        .card-icon.stat {
+            background-color: rgba(67, 97, 238, 0.1);
+            color: var(--primary-color);
+        }
+
+        .card-icon.fine {
+            background-color: rgba(248, 150, 30, 0.1);
+            color: var(--warning-color);
+        }
+
+        .card-icon.report {
+            background-color: rgba(76, 201, 240, 0.1);
+            color: var(--success-color);
+        }
+
+        .card-icon.vehicle {
+            background-color: rgba(247, 37, 133, 0.1);
+            color: var(--danger-color);
+        }
+
+        .card-title {
+            font-size: 16px;
+            color: var(--gray-color);
+            margin-bottom: 10px;
+        }
+
+        .card-value {
+            font-size: 32px;
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+
+        .card-change {
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .card-change.positive {
+            color: #2ecc71;
+        }
+
+        .card-change.negative {
+            color: #e74c3c;
+        }
+
+        /* Content Sections */
+        .content-section {
+            background-color: white;
+            border-radius: var(--border-radius);
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: var(--box-shadow);
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+        }
+
+        .section-title {
+            font-size: 22px;
+            font-weight: 600;
+            color: var(--dark-color);
+        }
+
+        .section-subtitle {
+            color: var(--gray-color);
+            margin-top: 5px;
+        }
+
+        /* Forms */
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 20px;
+            margin-bottom: 25px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: var(--dark-color);
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 14px 16px;
+            border-radius: 8px;
+            border: 1px solid var(--gray-light);
+            font-family: 'Poppins', sans-serif;
+            font-size: 15px;
+            transition: var(--transition);
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.2);
+        }
+
+        .form-actions {
+            display: flex;
+            gap: 15px;
+            margin-top: 10px;
+        }
+
+        /* Tables */
+        .table-container {
+            overflow-x: auto;
+            border-radius: 8px;
+            border: 1px solid var(--gray-light);
+        }
+
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .data-table th {
+            background-color: #f8f9fa;
+            padding: 16px 20px;
+            text-align: left;
+            font-weight: 600;
+            color: var(--dark-color);
+            border-bottom: 2px solid var(--gray-light);
+        }
+
+        .data-table td {
+            padding: 16px 20px;
+            border-bottom: 1px solid var(--gray-light);
+        }
+
+        .data-table tr:hover {
+            background-color: #f9f9f9;
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 500;
+        }
+
+        .status-active {
+            background-color: rgba(46, 204, 113, 0.15);
+            color: #27ae60;
+        }
+
+        .status-expired {
+            background-color: rgba(231, 76, 60, 0.15);
+            color: #c0392b;
+        }
+
+        .status-warning {
+            background-color: rgba(248, 150, 30, 0.15);
+            color: #d35400;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 8px;
+        }
+
+        .action-btn {
+            width: 36px;
+            height: 36px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: var(--transition);
+            border: none;
+        }
+
+        .action-btn.edit {
+            background-color: rgba(67, 97, 238, 0.1);
+            color: var(--primary-color);
+        }
+
+        .action-btn.edit:hover {
+            background-color: rgba(67, 97, 238, 0.2);
+        }
+
+        .action-btn.delete {
+            background-color: rgba(247, 37, 133, 0.1);
+            color: var(--danger-color);
+        }
+
+        .action-btn.delete:hover {
+            background-color: rgba(247, 37, 133, 0.2);
+        }
+
+        /* Messages */
+        .message {
+            padding: 15px 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            display: none;
+        }
+
+        .message.success {
+            background-color: rgba(46, 204, 113, 0.15);
+            color: #27ae60;
+            border-left: 4px solid #27ae60;
+        }
+
+        .message.error {
+            background-color: rgba(231, 76, 60, 0.15);
+            color: #c0392b;
+            border-left: 4px solid #c0392b;
+        }
+
+        .message.info {
+            background-color: rgba(52, 152, 219, 0.15);
+            color: #2980b9;
+            border-left: 4px solid #2980b9;
+        }
+
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-content {
+            background-color: white;
+            border-radius: var(--border-radius);
+            width: 90%;
+            max-width: 600px;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+        }
+
+        .modal-header {
+            padding: 25px 30px;
+            border-bottom: 1px solid var(--gray-light);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-title {
+            font-size: 22px;
+            font-weight: 600;
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            color: var(--gray-color);
+            transition: var(--transition);
+        }
+
+        .modal-close:hover {
+            color: var(--danger-color);
+        }
+
+        .modal-body {
+            padding: 30px;
+        }
+
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .sidebar {
+                width: 80px;
+            }
+            
+            .logo-text, .user-name, .user-role, .nav-links span {
+                display: none;
+            }
+            
+            .logo {
+                justify-content: center;
+                padding: 0 0 30px;
+            }
+            
+            .logo-icon {
+                margin-right: 0;
+            }
+            
+            .nav-links a {
+                justify-content: center;
+                padding: 20px;
+            }
+            
+            .nav-links i {
+                margin-right: 0;
+                font-size: 22px;
+            }
+            
+            .user-info {
+                justify-content: center;
+                padding: 20px 0;
+            }
+            
+            .user-avatar {
+                margin-right: 0;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                flex-direction: column;
+            }
+            
+            .sidebar {
+                width: 100%;
+                flex-direction: row;
+                padding: 15px;
+                justify-content: space-between;
+            }
+            
+            .logo {
+                padding: 0;
+                border-bottom: none;
+                margin-bottom: 0;
+            }
+            
+            .nav-links {
+                display: flex;
+                flex: 0;
+            }
+            
+            .nav-links li {
+                margin-bottom: 0;
+                margin-right: 5px;
+            }
+            
+            .user-info {
+                display: none;
+            }
+            
+            .main-content {
+                padding: 20px;
+            }
+            
+            .cards-container {
+                grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            }
+            
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Sidebar Navigation -->
+        <nav class="sidebar">
+            <div class="logo">
+                <div class="logo-icon">
+                    <i class="fas fa-car"></i>
+                </div>
+                <div class="logo-text">FleetAdmin Pro</div>
+            </div>
+            
+            <ul class="nav-links">
+                <li>
+                    <a href="#" class="active" onclick="showSection('dashboard')">
+                        <i class="fas fa-tachometer-alt"></i>
+                        <span>Dashboard</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="#" onclick="showSection('vehicles')">
+                        <i class="fas fa-car-side"></i>
+                        <span>Vehicle Management</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="#" onclick="showSection('addVehicle')">
+                        <i class="fas fa-plus-circle"></i>
+                        <span>Add New Vehicle</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="#" onclick="showSection('fines')">
+                        <i class="fas fa-file-invoice-dollar"></i>
+                        <span>Fines & Penalties</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="#" onclick="showSection('reports')">
+                        <i class="fas fa-chart-bar"></i>
+                        <span>Monthly Reports</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="#" onclick="showSection('stats')">
+                        <i class="fas fa-chart-pie"></i>
+                        <span>Statistics</span>
+                    </a>
+                </li>
+            </ul>
+            
+            <div class="user-info">
+                <div class="user-avatar">AD</div>
+                <div>
+                    <div class="user-name">Admin User</div>
+                    <div class="user-role">System Administrator</div>
+                </div>
+            </div>
+        </nav>
+        
+        <!-- Main Content Area -->
+        <main class="main-content">
+            <!-- Dashboard Section (Default View) -->
+            <section id="dashboard" class="content-section">
+                <div class="header">
+                    <div>
+                        <h1 class="page-title">Admin Dashboard</h1>
+                        <p class="page-subtitle">Vehicle Fleet Management System</p>
+                    </div>
+                    <div class="header-actions">
+                        <button class="btn btn-primary" onclick="loadStats()">
+                            <i class="fas fa-sync-alt"></i> Refresh Stats
+                        </button>
+                        <button class="btn btn-success" onclick="showSection('addVehicle')">
+                            <i class="fas fa-plus"></i> Add Vehicle
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Stats Cards -->
+                <div class="cards-container">
+                    <div class="card">
+                        <div class="card-icon stat">
+                            <i class="fas fa-car"></i>
+                        </div>
+                        <div class="card-title">Total Vehicles</div>
+                        <div class="card-value" id="totalVehicles">0</div>
+                        <div class="card-change positive">Loading...</div>
+                    </div>
+                    
+                    <div class="card">
+                        <div class="card-icon fine">
+                            <i class="fas fa-file-invoice-dollar"></i>
+                        </div>
+                        <div class="card-title">Pending Fines</div>
+                        <div class="card-value" id="pendingFines">0</div>
+                        <div class="card-change negative">Loading...</div>
+                    </div>
+                    
+                    <div class="card">
+                        <div class="card-icon report">
+                            <i class="fas fa-chart-line"></i>
+                        </div>
+                        <div class="card-title">Total Revenue</div>
+                        <div class="card-value" id="totalRevenue">$0</div>
+                        <div class="card-change positive">Loading...</div>
+                    </div>
+                    
+                    <div class="card">
+                        <div class="card-icon vehicle">
+                            <i class="fas fa-exclamation-triangle"></i>
+                        </div>
+                        <div class="card-title">Unpaid Fines</div>
+                        <div class="card-value" id="unpaidFines">0</div>
+                        <div class="card-change negative">Loading...</div>
+                    </div>
+                </div>
+                
+                <!-- Quick Actions -->
+                <div class="content-section">
+                    <div class="section-header">
+                        <h2 class="section-title">Quick Actions</h2>
+                    </div>
+                    <div class="form-actions">
+                        <button class="btn btn-primary" onclick="loadStats()">
+                            <i class="fas fa-chart-bar"></i> Load Statistics
+                        </button>
+                        <button class="btn btn-outline" onclick="showSection('fines'); loadFines();">
+                            <i class="fas fa-file-invoice-dollar"></i> View Fines
+                        </button>
+                        <button class="btn btn-outline" onclick="showSection('reports'); loadMonthlyReport();">
+                            <i class="fas fa-chart-pie"></i> Monthly Report
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Recent Vehicles -->
+                <div class="content-section">
+                    <div class="section-header">
+                        <h2 class="section-title">Recent Vehicles</h2>
+                        <button class="btn btn-outline" onclick="showSection('vehicles')">
+                            <i class="fas fa-eye"></i> View All
+                        </button>
+                    </div>
+                    <div class="table-container">
+                        <table class="data-table">
+                            <thead>
+<!-- Update the Recent Vehicles table header -->
+<tr>
+    <th>Vehicle No</th>
+    <th>Model No</th> <!-- Added -->
+    <th>Owner Name</th>
+    <th>RFID Tag</th>
+    <th>Mobile Number</th>
+    <th>Insurance Expiry</th>
+    <th>Actions</th>
+</tr>
+                            </thead>
+                            <tbody id="recentVehiclesTable">
+                                <tr>
+                                    <td colspan="6" style="text-align: center; padding: 20px;">
+                                        <i class="fas fa-spinner fa-spin"></i> Loading vehicles...
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+            
+            <!-- Vehicle Management Section -->
+            <section id="vehicles" class="content-section" style="display:none;">
+                <div class="header">
+                    <div>
+                        <h1 class="page-title">Vehicle Management</h1>
+                        <p class="page-subtitle">View, edit, and delete vehicle records</p>
+                    </div>
+                    <div class="header-actions">
+                        <button class="btn btn-success" onclick="showSection('addVehicle')">
+                            <i class="fas fa-plus"></i> Add New Vehicle
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Search Vehicle -->
+                <div class="content-section">
+                    <h2 class="section-title">Search Vehicle</h2>
+                    <p class="section-subtitle">Search by Vehicle Number or RFID Tag</p>
+                    
+                    <div class="form-group">
+                        <div style="display:flex; gap:10px; max-width:500px;">
+                            <input type="text" id="search_value" class="form-control" placeholder="Enter Vehicle No or RFID Tag">
+                            <button class="btn btn-primary" onclick="searchVehicle()">
+                                <i class="fas fa-search"></i> Search
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div id="searchMessage" class="message" style="display:none;"></div>
+                    
+                    <div class="table-container" id="vehicleSearchResults" style="display:none; margin-top: 20px;">
+                        <!-- Search results will be displayed here -->
+                    </div>
+                </div>
+                
+                <!-- All Vehicles -->
+                <div class="content-section">
+                    <div class="section-header">
+                        <h2 class="section-title">All Vehicles</h2>
+                        <button class="btn btn-outline" onclick="loadAllVehicles()">
+                            <i class="fas fa-sync-alt"></i> Refresh
+                        </button>
+                    </div>
+                    
+                    <div class="table-container">
+                        <table class="data-table">
+                            <thead>
+<!-- Update the Recent Vehicles table header -->
+<tr>
+    <th>Vehicle No</th>
+    <th>Model No</th> <!-- Added -->
+    <th>Owner Name</th>
+    <th>RFID Tag</th>
+    <th>Mobile Number</th>
+    <th>Insurance Expiry</th>
+    <th>Actions</th>
+</tr>
+                            </thead>
+                            <tbody id="allVehiclesTable">
+                                <tr>
+                                    <td colspan="7" style="text-align: center; padding: 20px;">
+                                        <i class="fas fa-spinner fa-spin"></i> Loading vehicles...
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+            
+            <!-- Add Vehicle Section -->
+            <section id="addVehicle" class="content-section" style="display:none;">
+                <div class="header">
+                    <div>
+                        <h1 class="page-title">Add New Vehicle</h1>
+                        <p class="page-subtitle">Register a new vehicle in the system</p>
+                    </div>
+                    <div class="header-actions">
+                        <button class="btn btn-outline" onclick="showSection('vehicles')">
+                            <i class="fas fa-arrow-left"></i> Back to Vehicles
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="content-section">
+                    <h2 class="section-title">Vehicle Information</h2>
+                    <p class="section-subtitle">Fill in all required vehicle details</p>
+                    
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label class="form-label" for="vehicle_no">Vehicle Number *</label>
+                            <input type="text" id="vehicle_no" class="form-control" placeholder="e.g. MH12AB1234">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label" for="rfid_tag">RFID Tag *</label>
+                            <input type="text" id="rfid_tag" class="form-control" placeholder="e.g. RFID-12345">
+                        </div>
+                        <!-- Add Vehicle Section - Add after RFID Tag field -->
+<div class="form-group">
+    <label class="form-label" for="model_no">Model Number *</label>
+    <input type="text" id="model_no" class="form-control" placeholder="e.g. Maruti Suzuki Swift Dzire">
+</div>
+                        
+                        <div class="form-group">
+                            <label class="form-label" for="owner_name">Owner Name *</label>
+                            <input type="text" id="owner_name" class="form-control" placeholder="Full name of vehicle owner">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label" for="mobile_number">Mobile Number *</label>
+                            <input type="text" id="mobile_number" class="form-control" placeholder="10-digit mobile number">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label" for="insurance_expiry">Insurance Expiry Date</label>
+                            <input type="date" id="insurance_expiry" class="form-control">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label" for="puc_expiry">PUC Expiry Date</label>
+                            <input type="date" id="puc_expiry" class="form-control">
+                        </div>
+                    </div>
+                    
+                    <div class="form-actions">
+                        <button class="btn btn-primary" onclick="addVehicle()">
+                            <i class="fas fa-save"></i> Add Vehicle
+                        </button>
+                        <button class="btn btn-outline" onclick="clearAddVehicleForm()">
+                            <i class="fas fa-eraser"></i> Clear Form
+                        </button>
+                    </div>
+                    
+                    <div id="addVehicleMsg" class="message" style="display:none;"></div>
+                </div>
+            </section>
+            
+            <!-- Fines Section -->
+            <section id="fines" class="content-section" style="display:none;">
+                <div class="header">
+                    <div>
+                        <h1 class="page-title">Fines & Penalties</h1>
+                        <p class="page-subtitle">Manage and view all vehicle fines</p>
+                    </div>
+                    <div class="header-actions">
+                        <button class="btn btn-primary" onclick="loadFines()">
+                            <i class="fas fa-sync-alt"></i> Refresh Fines
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="content-section">
+                    <div class="section-header">
+                        <h2 class="section-title">All Fines</h2>
+                        <div class="header-actions">
+                            <button class="btn btn-success" onclick="showAddFineModal()">
+                                <i class="fas fa-plus"></i> Add Fine
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="table-container">
+                        <table class="data-table">
+                            <thead>
+<!-- Update the Recent Vehicles table header -->
+<tr>
+    <th>Vehicle No</th>
+    <th>Model No</th> <!-- Added -->
+    <th>Owner Name</th>
+    <th>RFID Tag</th>
+    <th>Mobile Number</th>
+    <th>Insurance Expiry</th>
+    <th>Actions</th>
+</tr>
+                            </thead>
+                            <tbody id="finesTable">
+                                <tr>
+                                    <td colspan="8" style="text-align: center; padding: 20px;">
+                                        <i class="fas fa-spinner fa-spin"></i> Loading fines...
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+            
+            <!-- Reports Section -->
+            <section id="reports" class="content-section" style="display:none;">
+                <div class="header">
+                    <div>
+                        <h1 class="page-title">Monthly Reports</h1>
+                        <p class="page-subtitle">View and analyze monthly performance reports</p>
+                    </div>
+                    <div class="header-actions">
+                        <button class="btn btn-primary" onclick="loadMonthlyReport()">
+                            <i class="fas fa-sync-alt"></i> Refresh Report
+                        </button>
+                        <button class="btn btn-success" onclick="generateReport()">
+                            <i class="fas fa-download"></i> Download Report
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="content-section">
+                    <h2 class="section-title">Monthly Analytics</h2>
+                    <p class="section-subtitle">Monthly statistics and performance metrics</p>
+                    
+                    <div class="table-container">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Month</th>
+                                    <th>Total Vehicles</th>
+                                    <th>Total Fines</th>
+                                    <th>Total Revenue</th>
+                                    <th>Unpaid Fines</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="reportsTable">
+                                <tr>
+                                    <td colspan="6" style="text-align: center; padding: 20px;">
+                                        <i class="fas fa-spinner fa-spin"></i> Loading reports...
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+            
+            <!-- Statistics Section -->
+            <section id="stats" class="content-section" style="display:none;">
+                <div class="header">
+                    <div>
+                        <h1 class="page-title">System Statistics</h1>
+                        <p class="page-subtitle">Comprehensive system analytics and insights</p>
+                    </div>
+                    <div class="header-actions">
+                        <button class="btn btn-primary" onclick="loadStats()">
+                            <i class="fas fa-sync-alt"></i> Refresh Stats
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="content-section">
+                    <h2 class="section-title">Detailed Statistics</h2>
+                    <p class="section-subtitle">Real-time system statistics and analytics</p>
+                    
+                    <div style="background:#f8f9fa; padding:20px; border-radius:8px; overflow:auto; max-height:400px;">
+                        <pre id="statsResultDetailed">Loading statistics...</pre>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+    
+    <!-- Edit Vehicle Modal -->
+    <div id="editVehicleModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">Edit Vehicle Details</h2>
+                <button class="modal-close" onclick="closeEditModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="editVehicleForm">
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label class="form-label" for="edit_vehicle_no">Vehicle Number *</label>
+                            <input type="text" id="edit_vehicle_no" class="form-control" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label" for="edit_rfid_tag">RFID Tag *</label>
+                            <input type="text" id="edit_rfid_tag" class="form-control" required>
+                        </div>
+                        <!-- Edit Vehicle Modal - Add after RFID Tag field -->
+<div class="form-group">
+    <label class="form-label" for="edit_model_no">Model Number *</label>
+    <input type="text" id="edit_model_no" class="form-control" required>
+</div>
+                        <div class="form-group">
+                            <label class="form-label" for="edit_owner_name">Owner Name *</label>
+                            <input type="text" id="edit_owner_name" class="form-control" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label" for="edit_mobile_number">Mobile Number *</label>
+                            <input type="text" id="edit_mobile_number" class="form-control" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label" for="edit_insurance_expiry">Insurance Expiry Date</label>
+                            <input type="date" id="edit_insurance_expiry" class="form-control">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label" for="edit_puc_expiry">PUC Expiry Date</label>
+                            <input type="date" id="edit_puc_expiry" class="form-control">
+                        </div>
+                    </div>
+                    
+                    <input type="hidden" id="edit_vehicle_id">
+                    
+                    <div class="form-actions">
+                        <button type="button" class="btn btn-primary" onclick="saveVehicleChanges()">
+                            <i class="fas fa-save"></i> Save Changes
+                        </button>
+                        <button type="button" class="btn btn-outline" onclick="closeEditModal()">
+                            Cancel
+                        </button>
+                    </div>
+                </form>
+                
+                <div id="editVehicleMsg" class="message" style="display:none; margin-top:20px;"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Fine Modal -->
+    <div id="addFineModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">Add New Fine</h2>
+                <button class="modal-close" onclick="closeAddFineModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="addFineForm">
+                    <div class="form-group">
+                        <label class="form-label" for="fine_rfid">RFID Tag *</label>
+                        <input type="text" id="fine_rfid" class="form-control" placeholder="Enter RFID tag" required>
+                        <small class="text-muted">Enter the RFID tag of the vehicle to fine</small>
+                    </div>
+                    
+                    <div class="form-group" style="margin-top: 20px;">
+                        <label class="form-label">Violation Types</label>
+                        <div style="background: #f8f9fa; padding: 15px; border-radius: 8px; margin-top: 10px;">
+                            <p><strong>Note:</strong> Fines will be automatically calculated based on:</p>
+                            <ul style="margin: 10px 0 10px 20px;">
+                                <li>Insurance Expired: ₹1000</li>
+                                <li>PUC Expired: ₹500</li>
+                                <li>Default Traffic Violation: ₹500</li>
+                            </ul>
+                        </div>
+                    </div>
+                    
+                    <div class="form-actions">
+                        <button type="button" class="btn btn-danger" onclick="imposeFine()">
+                            <i class="fas fa-gavel"></i> Impose Fine
+                        </button>
+                        <button type="button" class="btn btn-outline" onclick="closeAddFineModal()">
+                            Cancel
+                        </button>
+                    </div>
+                </form>
+                
+                <div id="addFineMsg" class="message" style="display:none; margin-top:20px;"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ================= ADMIN JS =================
+        const API_BASE = "http://127.0.0.1:5001/api/admin";
+        
+        // Store vehicle data for editing
+        let vehicleData = [];
+        let currentEditId = null;
+
+        function getAuthHeaders() {
+            const token = localStorage.getItem("token");
+            return {
+                "Content-Type": "application/json",
+                "Authorization": token || ""
+            };
+        }
+
+        // ================= NAVIGATION =================
+function showSection(sectionId) {
+    console.log('Showing section:', sectionId);
+    
+    // Hide all sections
+    const sections = document.querySelectorAll('.content-section');
+    sections.forEach(section => {
+        section.style.display = 'none';
+    });
+    
+    // Show selected section
+    const targetSection = document.getElementById(sectionId);
+    if (targetSection) {
+        targetSection.style.display = 'block';
+        
+        // Show all nested content-sections inside this section
+        const nestedSections = targetSection.querySelectorAll('.content-section');
+        nestedSections.forEach(nestedSection => {
+            nestedSection.style.display = 'block';
+        });
+    } else {
+        console.error('Section not found:', sectionId);
+    }
+    
+    // Update active nav link
+    const navLinks = document.querySelectorAll('.nav-links a');
+    navLinks.forEach(link => {
+        link.classList.remove('active');
+    });
+    
+    // Find and activate the corresponding nav link
+    const activeLink = Array.from(navLinks).find(link => {
+        const onclick = link.getAttribute('onclick');
+        return onclick && onclick.includes(`'${sectionId}'`);
+    });
+    
+    if (activeLink) {
+        activeLink.classList.add('active');
+    }
+    
+    // Load data for specific sections
+    switch(sectionId) {
+        case 'vehicles':
+            loadAllVehicles();
+            break;
+        case 'fines':
+            loadFines();
+            break;
+        case 'reports':
+            loadMonthlyReport();
+            break;
+        case 'stats':
+            loadStats();
+            break;
+        case 'dashboard':
+            loadDashboardData();
+            break;
+    }
+    
+    return false;
+}
+
+        // ================= DASHBOARD FUNCTIONS =================
+        async function loadDashboardData() {
+            try {
+                // Load stats for dashboard cards
+                const statsRes = await fetch(`${API_BASE}/stats`, {
+                    headers: getAuthHeaders()
+                });
+                
+                if (statsRes.ok) {
+                    const result = await statsRes.json();
+                    
+                    // Update dashboard cards with real data
+                    document.getElementById('totalVehicles').textContent = result.total_vehicles || '0';
+                    document.getElementById('pendingFines').textContent = result.unpaid_fines || '0';
+                    document.getElementById('unpaidFines').textContent = result.unpaid_fines || '0';
+                    document.getElementById('totalRevenue').textContent = `₹${result.total_amount || '0'}`;
+                    
+                    // Update change indicators
+                    document.querySelectorAll('.card-change').forEach(el => {
+                        if (el.classList.contains('positive')) {
+                            el.textContent = 'Updated just now';
+                        } else if (el.classList.contains('negative')) {
+                            el.textContent = `${result.unpaid_fines || 0} unpaid`;
+                        }
+                    });
+                } else {
+                    console.error('Failed to load stats:', statsRes.status);
+                }
+                
+                // Load recent vehicles
+                await loadRecentVehicles();
+                
+            } catch (error) {
+                console.error('Error loading dashboard data:', error);
+                showMessage('searchMessage', 'Error loading dashboard data', 'error');
+            }
+        }
+
+        async function loadRecentVehicles() {
+            try {
+                const res = await fetch(`${API_BASE}/vehicles`, {
+                    headers: getAuthHeaders()
+                });
+
+                if (!res.ok) {
+                    throw new Error(`HTTP ${res.status}`);
+                }
+
+                const result = await res.json();
+                const tableBody = document.getElementById('recentVehiclesTable');
+                tableBody.innerHTML = '';
+
+                if (!result.vehicles || result.vehicles.length === 0) {
+                    tableBody.innerHTML = `
+                        <tr>
+                            <td colspan="6" style="text-align:center; padding:20px;">
+                                No vehicles found in the system
+                            </td>
+                        </tr>
+                    `;
+                    return;
+                }
+
+                // Show only first 5 vehicles
+                const recentVehicles = result.vehicles.slice(0, 5);
+                
+                recentVehicles.forEach(vehicle => {
+                    const row = document.createElement('tr');
+                    
+                    // Format date
+                    const insuranceDate = vehicle.insurance_expiry ? 
+                        new Date(vehicle.insurance_expiry).toLocaleDateString() : 'N/A';
+                    
+// In loadRecentVehicles() function, update the row generation:
+row.innerHTML = `
+    <td>${vehicle.vehicle_no || 'N/A'}</td>
+    <td>${vehicle.model_no || 'N/A'}</td> <!-- Added -->
+    <td>${vehicle.owner_name || 'N/A'}</td>
+    <td>${vehicle.rfid_tag || 'N/A'}</td>
+    <td>${vehicle.mobile_number || 'N/A'}</td>
+    <td>${insuranceDate}</td>
+    <td>
+        <div class="action-buttons">
+            <button class="action-btn edit" onclick="openEditModal('${vehicle._id}')">
+                <i class="fas fa-edit"></i>
+            </button>
+            <button class="action-btn delete" onclick="deleteVehicle('${vehicle._id}')">
+                <i class="fas fa-trash"></i>
+            </button>
+        </div>
+    </td>
+`;
+                    
+                    tableBody.appendChild(row);
+                });
+                
+            } catch (error) {
+                console.error('Error loading recent vehicles:', error);
+                const tableBody = document.getElementById('recentVehiclesTable');
+                tableBody.innerHTML = `
+                    <tr>
+                        <td colspan="6" style="text-align:center; padding:20px; color:#e74c3c;">
+                            <i class="fas fa-exclamation-triangle"></i> Error loading vehicles
+                        </td>
+                    </tr>
+                `;
+            }
+        }
+
+        // ================= ADD VEHICLE =================
+        async function addVehicle() {
+    const data = {
+        vehicle_no: document.getElementById("vehicle_no").value.trim(),
+        model_no: document.getElementById("model_no").value.trim(), // Added
+        rfid_tag: document.getElementById("rfid_tag").value.trim(),
+        owner_name: document.getElementById("owner_name").value.trim(),
+        insurance_expiry: document.getElementById("insurance_expiry").value,
+        puc_expiry: document.getElementById("puc_expiry").value,
+        mobile_number: document.getElementById("mobile_number").value.trim()
+    };
+    
+    // Validation - Update required fields
+    if (!data.vehicle_no || !data.model_no || !data.rfid_tag || !data.owner_name || !data.mobile_number) {
+        showMessage('addVehicleMsg', 'Please fill in all required fields (Vehicle No, Model No, RFID Tag, Owner Name, Mobile Number).', 'error');
+        return;
+    }
+            
+            if (data.mobile_number && !/^\d{10}$/.test(data.mobile_number)) {
+                showMessage('addVehicleMsg', 'Please enter a valid 10-digit mobile number.', 'error');
+                return;
+            }
+
+            try {
+                const res = await fetch(`${API_BASE}/add-vehicle`, {
+                    method: "POST",
+                    headers: getAuthHeaders(),
+                    body: JSON.stringify(data)
+                });
+
+                const result = await res.json();
+                
+                if (res.ok) {
+                    showMessage('addVehicleMsg', result.message || 'Vehicle added successfully!', 'success');
+                    clearAddVehicleForm();
+                    
+                    // Refresh vehicle lists
+                    if (document.getElementById('vehicles').style.display !== 'none') {
+                        loadAllVehicles();
+                    }
+                    
+                    // Refresh dashboard
+                    loadDashboardData();
+                    
+                    // Auto-switch to vehicles section after 2 seconds
+                    setTimeout(() => {
+                        showSection('vehicles');
+                    }, 2000);
+                    
+                } else {
+                    showMessage('addVehicleMsg', result.message || 'Error adding vehicle', 'error');
+                }
+            } catch (error) {
+                console.error('Error adding vehicle:', error);
+                showMessage('addVehicleMsg', 'Network error. Please try again.', 'error');
+            }
+        }
+
+function clearAddVehicleForm() {
+    document.getElementById("vehicle_no").value = '';
+    document.getElementById("model_no").value = ''; // Added
+    document.getElementById("rfid_tag").value = '';
+    document.getElementById("owner_name").value = '';
+    document.getElementById("insurance_expiry").value = '';
+    document.getElementById("puc_expiry").value = '';
+    document.getElementById("mobile_number").value = '';
+}
+        // ================= SEARCH VEHICLE =================
+        async function searchVehicle() {
+            const value = document.getElementById("search_value").value.trim();
+            
+            if (!value) {
+                showMessage('searchMessage', 'Please enter a vehicle number or RFID tag to search.', 'info');
+                return;
+            }
+            
+            try {
+                const res = await fetch(`${API_BASE}/search-vehicle`, {
+                    method: "POST",
+                    headers: getAuthHeaders(),
+                    body: JSON.stringify({ value })
+                });
+
+                const result = await res.json();
+                const resultsContainer = document.getElementById('vehicleSearchResults');
+                const messageElement = document.getElementById('searchMessage');
+                
+                if (res.ok && result.vehicle_no) {
+                    showMessage('searchMessage', `Vehicle found: ${result.vehicle_no}`, 'success');
+                    
+                    // Format dates
+                    const insuranceDate = result.insurance_expiry ? 
+                        new Date(result.insurance_expiry).toLocaleDateString() : 'N/A';
+                    const pucDate = result.puc_expiry ? 
+                        new Date(result.puc_expiry).toLocaleDateString() : 'N/A';
+                    
+// In searchVehicle() function, update the search results table:
+resultsContainer.innerHTML = `
+    <h3 style="margin-bottom: 15px;">Search Result</h3>
+    <table class="data-table">
+        <thead>
+            <tr>
+                <th>Vehicle No</th>
+                <th>Model No</th> <!-- Added -->
+                <th>Owner Name</th>
+                <th>RFID Tag</th>
+                <th>Mobile Number</th>
+                <th>Insurance Expiry</th>
+                <th>PUC Expiry</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>${result.vehicle_no || 'N/A'}</td>
+                <td>${result.model_no || 'N/A'}</td> <!-- Added -->
+                <td>${result.owner_name || 'N/A'}</td>
+                <td>${result.rfid_tag || 'N/A'}</td>
+                <td>${result.mobile_number || 'N/A'}</td>
+                <td>${insuranceDate}</td>
+                <td>${pucDate}</td>
+                <td>
+                    <div class="action-buttons">
+                        <button class="action-btn edit" onclick="openEditModal('${result._id}')">
+                            <i class="fas fa-edit"></i>
+                        </button>
+                        <button class="action-btn delete" onclick="deleteVehicle('${result._id}')">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+`;
+                    resultsContainer.style.display = 'block';
+                } else {
+                    showMessage('searchMessage', result.message || `No vehicle found matching "${value}"`, 'error');
+                    resultsContainer.style.display = 'none';
+                }
+            } catch (error) {
+                console.error('Error searching vehicle:', error);
+                showMessage('searchMessage', 'Network error. Please try again.', 'error');
+            }
+        }
+
+        // ================= LOAD ALL VEHICLES =================
+        async function loadAllVehicles() {
+            try {
+                const tableBody = document.getElementById('allVehiclesTable');
+                tableBody.innerHTML = `
+                    <tr>
+                        <td colspan="7" style="text-align: center; padding: 20px;">
+                            <i class="fas fa-spinner fa-spin"></i> Loading vehicles...
+                        </td>
+                    </tr>
+                `;
+                
+                const res = await fetch(`${API_BASE}/vehicles`, {
+                    headers: getAuthHeaders()
+                });
+
+                if (!res.ok) {
+                    throw new Error(`HTTP ${res.status}`);
+                }
+
+                const result = await res.json();
+                tableBody.innerHTML = '';
+
+                if (!result.vehicles || result.vehicles.length === 0) {
+                    tableBody.innerHTML = `
+                        <tr>
+                            <td colspan="7" style="text-align:center; padding:40px; color:#6c757d;">
+                                <i class="fas fa-car" style="font-size:40px; margin-bottom:15px; display:block; opacity:0.5;"></i>
+                                No vehicles found. Add your first vehicle!
+                            </td>
+                        </tr>
+                    `;
+                    return;
+                }
+
+                vehicleData = result.vehicles;
+
+                result.vehicles.forEach(vehicle => {
+                    const row = document.createElement('tr');
+                    
+                    // Format dates
+                    const insuranceDate = vehicle.insurance_expiry ? 
+                        new Date(vehicle.insurance_expiry).toLocaleDateString() : 'N/A';
+                    const pucDate = vehicle.puc_expiry ? 
+                        new Date(vehicle.puc_expiry).toLocaleDateString() : 'N/A';
+                    
+// In loadAllVehicles() function, update the row generation:
+row.innerHTML = `
+    <td>${vehicle.vehicle_no || 'N/A'}</td>
+    <td>${vehicle.model_no || 'N/A'}</td> <!-- Added -->
+    <td>${vehicle.owner_name || 'N/A'}</td>
+    <td>${vehicle.rfid_tag || 'N/A'}</td>
+    <td>${vehicle.mobile_number || 'N/A'}</td>
+    <td>${insuranceDate}</td>
+    <td>${pucDate}</td>
+    <td>
+        <div class="action-buttons">
+            <button class="action-btn edit" onclick="openEditModal('${vehicle._id}')">
+                <i class="fas fa-edit"></i>
+            </button>
+            <button class="action-btn delete" onclick="deleteVehicle('${vehicle._id}')">
+                <i class="fas fa-trash"></i>
+            </button>
+        </div>
+    </td>
+`;
+                    
+                    tableBody.appendChild(row);
+                });
+
+            } catch (error) {
+                console.error('Error loading all vehicles:', error);
+                const tableBody = document.getElementById('allVehiclesTable');
+                tableBody.innerHTML = `
+                    <tr>
+                        <td colspan="7" style="text-align:center; padding:40px; color:#e74c3c;">
+                            <i class="fas fa-exclamation-triangle" style="font-size:40px; margin-bottom:15px; display:block;"></i>
+                            Error loading vehicles. Please check your connection and try again.
+                        </td>
+                    </tr>
+                `;
+            }
+        }
+
+        function refreshVehicleList() {
+            loadAllVehicles();
+            showMessage('searchMessage', 'Vehicle list refreshed successfully.', 'success');
+        }
+
+        // ================= EDIT VEHICLE MODAL =================
+        function openEditModal(vehicleId) {
+            if (!vehicleId) {
+                console.error("Invalid vehicleId:", vehicleId);
+                showMessage('searchMessage', 'Invalid vehicle selected. Please refresh.', 'error');
+                return;
+            }
+
+            currentEditId = vehicleId;
+            
+            // Try to find vehicle in cached data first
+            const vehicle = vehicleData.find(v => v._id === vehicleId);
+            
+            if (vehicle) {
+                fillEditForm(vehicle);
+            } else {
+                fetchVehicleForEdit(vehicleId);
+            }
+        }
+
+        function fillEditForm(vehicle) {
+            document.getElementById('edit_vehicle_id').value = vehicle._id;
+            document.getElementById('edit_vehicle_no').value = vehicle.vehicle_no || '';
+                document.getElementById('edit_model_no').value = vehicle.model_no || ''; // Added
+            document.getElementById('edit_rfid_tag').value = vehicle.rfid_tag || '';
+            document.getElementById('edit_owner_name').value = vehicle.owner_name || '';
+            document.getElementById('edit_mobile_number').value = vehicle.mobile_number || '';
+            
+            // Format dates for input fields
+            if (vehicle.insurance_expiry) {
+                const insDate = new Date(vehicle.insurance_expiry);
+                document.getElementById('edit_insurance_expiry').value = insDate.toISOString().split('T')[0];
+            } else {
+                document.getElementById('edit_insurance_expiry').value = '';
+            }
+            
+            if (vehicle.puc_expiry) {
+                const pucDate = new Date(vehicle.puc_expiry);
+                document.getElementById('edit_puc_expiry').value = pucDate.toISOString().split('T')[0];
+            } else {
+                document.getElementById('edit_puc_expiry').value = '';
+            }
+
+            document.getElementById('editVehicleModal').style.display = 'flex';
+        }
+
+        async function fetchVehicleForEdit(vehicleId) {
+            try {
+                const res = await fetch(`${API_BASE}/vehicle/${vehicleId}`, {
+                    headers: getAuthHeaders()
+                });
+
+                if (!res.ok) {
+                    throw new Error(`HTTP ${res.status}`);
+                }
+
+                const vehicle = await res.json();
+                fillEditForm(vehicle);
+                
+            } catch (error) {
+                console.error('Error fetching vehicle for edit:', error);
+                showMessage('editVehicleMsg', 'Error loading vehicle details.', 'error');
+            }
+        }
+
+        function closeEditModal() {
+            document.getElementById('editVehicleModal').style.display = 'none';
+            document.getElementById('editVehicleMsg').style.display = 'none';
+            currentEditId = null;
+        }
+
+        async function saveVehicleChanges() {
+    const vehicleId = document.getElementById('edit_vehicle_id').value;
+    const data = {
+        vehicle_no: document.getElementById("edit_vehicle_no").value.trim(),
+        model_no: document.getElementById("edit_model_no").value.trim(), // Added
+        rfid_tag: document.getElementById("edit_rfid_tag").value.trim(),
+        owner_name: document.getElementById("edit_owner_name").value.trim(),
+        insurance_expiry: document.getElementById("edit_insurance_expiry").value,
+        puc_expiry: document.getElementById("edit_puc_expiry").value,
+        mobile_number: document.getElementById("edit_mobile_number").value.trim()
+    };
+    
+    // Validation - Update required fields
+    if (!data.vehicle_no || !data.model_no || !data.rfid_tag || !data.owner_name || !data.mobile_number) {
+        showMessage('editVehicleMsg', 'Please fill in all required fields.', 'error');
+        return;
+    }
+    
+            
+            try {
+                const res = await fetch(`${API_BASE}/update-vehicle/${vehicleId}`, {
+                    method: "PUT",
+                    headers: getAuthHeaders(),
+                    body: JSON.stringify(data)
+                });
+                
+                const result = await res.json();
+                
+                if (res.ok) {
+                    showMessage('editVehicleMsg', result.message || 'Vehicle updated successfully!', 'success');
+                    
+                    // Refresh vehicle lists
+                    setTimeout(() => {
+                        closeEditModal();
+                        loadAllVehicles();
+                        loadRecentVehicles();
+                        loadDashboardData();
+                    }, 1500);
+                } else {
+                    showMessage('editVehicleMsg', result.message || 'Error updating vehicle', 'error');
+                }
+            } catch (error) {
+                console.error('Error updating vehicle:', error);
+                showMessage('editVehicleMsg', 'Network error. Please try again.', 'error');
+            }
+        }
+
+        // ================= DELETE VEHICLE =================
+        async function deleteVehicle(id) {
+            if (!confirm('Are you sure you want to delete this vehicle? This action cannot be undone.')) {
+                return;
+            }
+            
+            try {
+                const res = await fetch(`${API_BASE}/delete-vehicle/${id}`, {
+                    method: "DELETE",
+                    headers: getAuthHeaders()
+                });
+                
+                const result = await res.json();
+                
+                if (res.ok) {
+                    showMessage('searchMessage', result.message || 'Vehicle deleted successfully!', 'success');
+                    
+                    // Refresh vehicle lists
+                    loadAllVehicles();
+                    loadRecentVehicles();
+                    loadDashboardData();
+                } else {
+                    showMessage('searchMessage', result.message || 'Error deleting vehicle', 'error');
+                }
+            } catch (error) {
+                console.error('Error deleting vehicle:', error);
+                showMessage('searchMessage', 'Network error. Please try again.', 'error');
+            }
+        }
+
+        // ================= STATS =================
+        async function loadStats() {
+            try {
+                const res = await fetch(`${API_BASE}/stats`, {
+                    headers: getAuthHeaders()
+                });
+
+                if (!res.ok) {
+                    throw new Error(`HTTP ${res.status}`);
+                }
+
+                const result = await res.json();
+                
+                // Update dashboard cards
+                document.getElementById('totalVehicles').textContent = result.total_vehicles || '0';
+                document.getElementById('pendingFines').textContent = result.unpaid_fines || '0';
+                document.getElementById('unpaidFines').textContent = result.unpaid_fines || '0';
+                document.getElementById('totalRevenue').textContent = `₹${result.total_amount || '0'}`;
+                
+                // Show detailed stats in stats section
+                document.getElementById("statsResultDetailed").innerText = JSON.stringify(result, null, 2);
+                
+                // Show success message if not in stats section
+                if (document.getElementById('stats').style.display === 'none') {
+                    showMessage('searchMessage', 'Statistics loaded successfully!', 'success');
+                }
+            } catch (error) {
+                console.error('Error loading stats:', error);
+                showMessage('searchMessage', 'Error loading statistics. Please try again.', 'error');
+                document.getElementById("statsResultDetailed").textContent = `Error: ${error.message}`;
+            }
+        }
+
+        // ================= FINES =================
+        async function loadFines() {
+            try {
+                const tableBody = document.getElementById('finesTable');
+                tableBody.innerHTML = `
+                    <tr>
+                        <td colspan="8" style="text-align: center; padding: 20px;">
+                            <i class="fas fa-spinner fa-spin"></i> Loading fines...
+                        </td>
+                    </tr>
+                `;
+                
+                const res = await fetch(`${API_BASE}/fines`, {
+                    headers: getAuthHeaders()
+                });
+                
+                if (!res.ok) {
+                    throw new Error(`HTTP ${res.status}`);
+                }
+                
+                const fines = await res.json();
+                tableBody.innerHTML = '';
+                
+                if (!fines || fines.length === 0) {
+                    tableBody.innerHTML = `
+                        <tr>
+                            <td colspan="8" style="text-align:center; padding:40px; color:#6c757d;">
+                                <i class="fas fa-file-invoice-dollar" style="font-size:40px; margin-bottom:15px; display:block; opacity:0.5;"></i>
+                                No fines found. Great job!
+                            </td>
+                        </tr>
+                    `;
+                    return;
+                }
+                
+                fines.forEach(fine => {
+                    const row = document.createElement('tr');
+                    
+                    // Format violations
+                    let violationsHtml = '';
+                    if (fine.violations && Array.isArray(fine.violations)) {
+                        violationsHtml = fine.violations.map(v => 
+                            `<div>${v.type || 'Violation'}: ₹${v.fine || 0}</div>`
+                        ).join('');
+                    } else {
+                        violationsHtml = 'Traffic Violation: ₹500';
+                    }
+                    
+                    // Format date
+                    const issuedDate = fine.issued_at ? 
+                        new Date(fine.issued_at).toLocaleString() : 'N/A';
+                    
+                    // Status badge
+                    const status = fine.status || 'UNPAID';
+                    const statusClass = status === 'PAID' ? 'status-active' : 'status-expired';
+                    const statusText = status === 'PAID' ? 'Paid' : 'Unpaid';
+                    
+                    row.innerHTML = `
+                        <td>${fine.vehicle_no || 'N/A'}</td>
+                        <td>${fine.owner_name || 'N/A'}</td>
+                        <td>${fine.rfid_tag || 'N/A'}</td>
+                        <td style="max-width: 200px;">${violationsHtml}</td>
+                        <td>₹${fine.total_amount || fine.amount || '0'}</td>
+                        <td>${issuedDate}</td>
+                        <td><span class="status-badge ${statusClass}">${statusText}</span></td>
+                        <td>
+                            <div class="action-buttons">
+                                <button class="action-btn edit" onclick="viewFineDetails('${fine.token || fine._id}')">
+                                    <i class="fas fa-eye"></i>
+                                </button>
+                            </div>
+                        </td>
+                    `;
+                    
+                    tableBody.appendChild(row);
+                });
+                
+            } catch (error) {
+                console.error('Error loading fines:', error);
+                const tableBody = document.getElementById('finesTable');
+                tableBody.innerHTML = `
+                    <tr>
+                        <td colspan="8" style="text-align:center; padding:40px; color:#e74c3c;">
+                            <i class="fas fa-exclamation-triangle" style="font-size:40px; margin-bottom:15px; display:block;"></i>
+                            Error loading fines. Please check your connection and try again.
+                        </td>
+                    </tr>
+                `;
+            }
+        }
+
+        function showAddFineModal() {
+            document.getElementById('addFineModal').style.display = 'flex';
+            document.getElementById('addFineMsg').style.display = 'none';
+        }
+
+        function closeAddFineModal() {
+            document.getElementById('addFineModal').style.display = 'none';
+            document.getElementById('addFineMsg').style.display = 'none';
+            document.getElementById('fine_rfid').value = '';
+        }
+
+        async function imposeFine() {
+            const rfid = document.getElementById('fine_rfid').value.trim();
+            
+            if (!rfid) {
+                showMessage('addFineMsg', 'Please enter an RFID tag', 'error');
+                return;
+            }
+            
+            try {
+                const res = await fetch(`${API_BASE}/impose-fine`, {
+                    method: "POST",
+                    headers: getAuthHeaders(),
+                    body: JSON.stringify({ rfid })
+                });
+                
+                const result = await res.json();
+                
+                if (res.ok) {
+                    showMessage('addFineMsg', result.message || 'Fine imposed successfully!', 'success');
+                    
+                    // Close modal and refresh fines list after 2 seconds
+                    setTimeout(() => {
+                        closeAddFineModal();
+                        loadFines();
+                        loadDashboardData();
+                    }, 2000);
+                    
+                } else {
+                    showMessage('addFineMsg', result.message || 'Error imposing fine', 'error');
+                }
+            } catch (error) {
+                console.error('Error imposing fine:', error);
+                showMessage('addFineMsg', 'Network error. Please try again.', 'error');
+            }
+        }
+
+        function viewFineDetails(fineId) {
+            alert(`Viewing fine details for ID: ${fineId}\n\nThis would open a detailed view in a real application.`);
+        }
+
+        // ================= MONTHLY REPORT =================
+        async function loadMonthlyReport() {
+            try {
+                const tableBody = document.getElementById('reportsTable');
+                tableBody.innerHTML = `
+                    <tr>
+                        <td colspan="6" style="text-align: center; padding: 20px;">
+                            <i class="fas fa-spinner fa-spin"></i> Loading reports...
+                        </td>
+                    </tr>
+                `;
+                
+                const res = await fetch(`${API_BASE}/reports`, {
+                    headers: getAuthHeaders()
+                });
+                
+                if (!res.ok) {
+                    throw new Error(`HTTP ${res.status}`);
+                }
+                
+                const reports = await res.json();
+                tableBody.innerHTML = '';
+                
+                if (!reports || reports.length === 0) {
+                    tableBody.innerHTML = `
+                        <tr>
+                            <td colspan="6" style="text-align:center; padding:40px; color:#6c757d;">
+                                <i class="fas fa-chart-bar" style="font-size:40px; margin-bottom:15px; display:block; opacity:0.5;"></i>
+                                No reports available yet. Reports will be generated at the end of each month.
+                            </td>
+                        </tr>
+                    `;
+                    return;
+                }
+                
+                reports.forEach(report => {
+                    const row = document.createElement('tr');
+                    
+                    // Format month
+                    const month = report._id ? 
+                        `${report._id.month}/${report._id.year}` : 
+                        'N/A';
+                    
+                    row.innerHTML = `
+                        <td>${month}</td>
+                        <td>${report.total_vehicles || '0'}</td>
+                        <td>${report.total_fines || '0'}</td>
+                        <td>₹${report.total_amount || '0'}</td>
+                        <td>${report.unpaid_fines || '0'}</td>
+                        <td>
+                            <div class="action-buttons">
+                                <button class="action-btn edit" onclick="downloadReport('${month}')">
+                                    <i class="fas fa-download"></i>
+                                </button>
+                                <button class="action-btn edit" onclick="viewReportDetails('${month}')">
+                                    <i class="fas fa-eye"></i>
+                                </button>
+                            </div>
+                        </td>
+                    `;
+                    
+                    tableBody.appendChild(row);
+                });
+                
+            } catch (error) {
+                console.error('Error loading monthly report:', error);
+                const tableBody = document.getElementById('reportsTable');
+                tableBody.innerHTML = `
+                    <tr>
+                        <td colspan="6" style="text-align:center; padding:40px; color:#e74c3c;">
+                            <i class="fas fa-exclamation-triangle" style="font-size:40px; margin-bottom:15px; display:block;"></i>
+                            Error loading reports. Please check your connection and try again.
+                        </td>
+                    </tr>
+                `;
+            }
+        }
+
+        function generateReport() {
+            alert('Generating and downloading report...\n\nThis would generate a PDF/Excel report in a real application.');
+        }
+
+        function downloadReport(month) {
+            alert(`Downloading report for ${month}...\n\nThis would trigger a file download in a real application.`);
+        }
+
+        function viewReportDetails(month) {
+            alert(`Viewing detailed report for ${month}...\n\nThis would show a detailed modal with charts in a real application.`);
+        }
+
+        // ================= HELPER FUNCTIONS =================
+        function showMessage(elementId, message, type) {
+            const element = document.getElementById(elementId);
+            if (!element) {
+                console.error(`Element not found: ${elementId}`);
+                return;
+            }
+            
+            element.textContent = message;
+            element.className = `message ${type}`;
+            element.style.display = 'block';
+            
+            // Auto-hide success messages after 5 seconds
+            if (type === 'success') {
+                setTimeout(() => {
+                    element.style.display = 'none';
+                }, 5000);
+            }
+        }
+
+        // Initialize dashboard on load
+        document.addEventListener('DOMContentLoaded', function() {
+            // Show dashboard by default
+            showSection('dashboard');
+            loadDashboardData();
+        });
+    </script>
+</body>
+</html>
