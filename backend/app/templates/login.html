@@ -1,0 +1,47 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <form id="adminLoginForm">
+  <input type="text" id="username" placeholder="Username" required>
+  <input type="password" id="password" placeholder="Password" required>
+  <button type="submit">Login</button>
+</form>
+
+<script>
+const API_BASE = "https://iot-based-project-of-rfid.vercel.app/api/admin";
+
+document.getElementById("adminLoginForm").addEventListener("submit", async (e) => {
+  e.preventDefault();
+  
+  const username = document.getElementById("username").value;
+  const password = document.getElementById("password").value;
+  
+  try {
+    const res = await fetch(`${API_BASE}/login`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ username, password })
+    });
+
+    const data = await res.json();
+    
+    if(res.ok){
+      localStorage.setItem("token", data.token);  // Save token for auth
+      alert("Login successful!");
+      window.location.href = "/api/admin/dashboard"; // Redirect to dashboard
+    } else {
+      alert(data.message);
+    }
+  } catch(err) {
+    console.error(err);
+    alert("Something went wrong!");
+  }
+});
+</script>
+
+</body>
+</html>

@@ -353,3 +353,8 @@ def get_vehicle(vehicle_id):
 def dashboard_page():
     # Optional: pass data if needed
     return render_template("dashboard.html")
+
+# Serve login page
+@admin_bp.route("/login-page", methods=["GET"])
+def login_page():
+    return render_template("login.html")
