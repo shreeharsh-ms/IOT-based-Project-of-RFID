@@ -529,27 +529,28 @@
                 </div>
 
                 <!-- Mobile Number Field -->
-                <div class="form-group">
-                    <label class="form-label" for="mobile_number">
-                        <i class="fas fa-mobile-alt"></i> Mobile Number
-                    </label>
-                    <div class="input-group">
-                        <div class="input-icon">
-                            <i class="fas fa-phone"></i>
-                        </div>
-                        <input 
-                            type="tel" 
-                            id="mobile_number" 
-                            class="form-control" 
-                            placeholder="Enter your 10-digit mobile number" 
-                            required
-                            pattern="[0-9]{10}"
-                            title="Enter 10-digit mobile number"
-                            maxlength="10"
-                            oninput="this.value = this.value.replace(/[^0-9]/g, '').slice(0, 10)"
-                        >
-                    </div>
-                </div>
+<!-- Mobile Number Field -->
+<div class="form-group">
+    <label class="form-label" for="mobile_number">
+        <i class="fas fa-mobile-alt"></i> Mobile Number
+    </label>
+    <div class="input-group">
+        <div class="input-icon">
+            <i class="fas fa-phone"></i>
+        </div>
+        <input 
+            type="tel" 
+            id="mobile_number" 
+            class="form-control" 
+            placeholder="Enter your 10-digit mobile number" 
+            required
+            pattern="[0-9]{10}"
+            title="Enter 10-digit mobile number"
+            maxlength="10"
+            oninput="this.value = this.value.replace(/[^0-9]/g, '')"
+        >
+    </div>
+</div>
 
                 <!-- Submit Button -->
                 <button type="submit" class="btn btn-primary" id="submitBtn">
@@ -690,25 +691,17 @@
         }
 
         // Format mobile number as user types
-        mobileInput.addEventListener('input', function(e) {
-            let value = e.target.value.replace(/\D/g, '');
-            if (value.length > 10) value = value.slice(0, 10);
-            
-            // Format as XXX-XXX-XXXX
-            if (value.length > 6) {
-                value = `${value.slice(0, 3)}-${value.slice(3, 6)}-${value.slice(6)}`;
-            } else if (value.length > 3) {
-                value = `${value.slice(0, 3)}-${value.slice(3)}`;
-            }
-            
-            e.target.value = value;
-        });
+mobileInput.addEventListener('input', function(e) {
+    // Only allow numbers and limit to 10 digits
+    let value = e.target.value.replace(/\D/g, '');
+    if (value.length > 10) value = value.slice(0, 10);
+    e.target.value = value;
+});
 
-        // Validate RFID format
-        function validateRFID(rfid) {
-            // RFID should be alphanumeric with optional hyphens
-            return /^[A-Za-z0-9\-]+$/.test(rfid) && rfid.length >= 6;
-        }
+// Update the validation function to be simpler:
+function validateMobile(mobile) {
+    return /^[0-9]{10}$/.test(mobile);
+}
 
         // Validate mobile number
         function validateMobile(mobile) {
@@ -879,11 +872,9 @@
                 rfidInput.value = savedRFID;
             }
             
-            if (savedMobile) {
-                // Format the mobile number
-                const formatted = savedMobile.replace(/(\d{3})(\d{3})(\d{4})/, '$1-$2-$3');
-                mobileInput.value = formatted;
-            }
+if (savedMobile) {
+    mobileInput.value = savedMobile; // Just show the plain number
+}
         });
 
         // Handle Enter key to submit form
