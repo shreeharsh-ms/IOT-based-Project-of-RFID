@@ -886,18 +886,58 @@
         }
 
         // Initiate payment
-        function initiatePayment() {
-            const totalAmount = document.getElementById('totalUnpaidAmount').textContent;
-            
-            // Show confirmation
-            const confirmed = confirm(`Proceed to pay ₹${totalAmount} via ${selectedPaymentMethod.toUpperCase()}?`);
-            
-            if (confirmed) {
-                // In a real app, this would integrate with Razorpay/Stripe/UPI
-                // For demo purposes, we'll simulate payment
-                simulatePayment();
-            }
+async function initiatePayment() {
+    console.log("Initiating payment via:", selectedPaymentMethod);
+    const totalAmount = document.getElementById('totalUnpaidAmount').textContent;
+
+    // Confirm with user
+    const confirmed = confirm(`Proceed to pay ₹${totalAmount} via ${selectedPaymentMethod.toUpperCase()}?`);
+    if (!confirmed) return;
+
+    const paymentBtn = document.querySelector('.btn-success');
+    const originalText = paymentBtn.innerHTML;
+
+    try {
+        // Show processing state
+        paymentBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing Payment...';
+        paymentBtn.disabled = true;
+
+        // Call backend to mark fines as PAID
+        const response = await fetch(`/api/admin/pay-fines`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+                token: new URLSearchParams(window.location.search).get("token"),
+                payment_method: selectedPaymentMethod
+            })
+        });
+
+        const result = await response.json();
+
+        if (!response.ok) {
+            throw new Error(result.message || "Payment failed");
         }
+
+        // Show success message
+        document.getElementById('successMessage').style.display = 'flex';
+        alert(`Payment Successful! Total Paid: ₹${result.total_paid}`);
+
+        // Reload fines to update UI
+        loadFines();
+
+    } catch (err) {
+        console.error("Payment error:", err);
+        alert(`Payment failed: ${err.message}`);
+    } finally {
+        // Reset button
+        paymentBtn.innerHTML = originalText;
+        paymentBtn.disabled = false;
+
+        // Scroll to success message
+        document.getElementById('successMessage').scrollIntoView({ behavior: 'smooth' });
+    }
+}
+
 
         // Simulate payment (for demo)
         function simulatePayment() {
