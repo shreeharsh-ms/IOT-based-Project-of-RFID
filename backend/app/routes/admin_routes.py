@@ -208,12 +208,22 @@ def send_sms_via_twilio(mobile_number, message):
     # Later: integrate Twilio API here
 
 
+# User login page (RFID + phone)
+@admin_bp.route("/user/login-page", methods=["GET"])
+def user_login_page():
+    return render_template("user_login.html")  # renders templates/user_login.html
+
 # Serve fine payment page
 @admin_bp.route("/user/fine", methods=["GET"])
 def fine_page():
-    # Optional: pass token as query param
-    token = request.args.get("token")
-    return render_template("fine.html", token=token)
+    token = request.args.get("token")  # Get token from URL
+    vehicle = mongo.db.vehicles.find_one({"access_token": token})
+
+    if not vehicle:
+        return redirect(url_for("admin.user_login_page"))  # redirect to user login if token invalid
+
+    return render_template("fine.html", token=token)  # Serve fines HTML
+
 
 
 @admin_bp.route("/impose-fine", methods=["POST"])
@@ -401,3 +411,42 @@ def create_admin():
     })
 
     return jsonify({"message": f"Admin '{username}' created successfully"})
+
+
+@admin_bp.route("/user/login", methods=["POST"])
+def user_login():
+    """
+    User login using RFID and phone number.
+    Expected JSON:
+    {
+        "rfid": "RFID_TAG",
+        "mobile_number": "PHONE_NUMBER"
+    }
+    """
+    data = request.json
+    rfid = data.get("rfid")
+    mobile_number = data.get("mobile_number")
+
+    if not rfid or not mobile_number:
+        return jsonify({"message": "RFID and mobile number are required"}), 400
+
+    vehicle = mongo.db.vehicles.find_one({
+        "rfid_tag": rfid,
+        "mobile_number": mobile_number
+    })
+
+    if not vehicle:
+        return jsonify({"message": "Invalid credentials"}), 401
+
+    # Generate access token for user session
+    token = vehicle.get("access_token")
+    if not token:
+        token = secrets.token_urlsafe(16)
+        mongo.db.vehicles.update_one(
+            {"_id": vehicle["_id"]},
+            {"$set": {"access_token": token}}
+        )
+
+    # Redirect URL to fines page with token
+    fines_url = f"{request.host_url}api/admin/user/fine?token={token}"
+    return jsonify({"token": token, "redirect_url": fines_url})

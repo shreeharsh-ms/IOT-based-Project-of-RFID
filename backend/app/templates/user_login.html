@@ -1,0 +1,45 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Login</title>
+</head>
+<body>
+    <form id="userLoginForm">
+        <input type="text" id="rfid" placeholder="RFID" required>
+        <input type="text" id="mobile_number" placeholder="Mobile Number" required>
+        <button type="submit">Login</button>
+    </form>
+
+<script>
+const API_BASE = "https://iot-based-project-of-rfid.vercel.app/api/admin";
+
+document.getElementById("userLoginForm").addEventListener("submit", async (e) => {
+    e.preventDefault();
+
+    const rfid = document.getElementById("rfid").value;
+    const mobile_number = document.getElementById("mobile_number").value;
+
+    try {
+        const res = await fetch(`${API_BASE}/user/login`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ rfid, mobile_number })
+        });
+
+        const data = await res.json();
+
+        if(res.ok){
+            localStorage.setItem("user_token", data.token); // Save user token
+            window.location.href = data.redirect_url; // Redirect to fines page
+        } else {
+            alert(data.message);
+        }
+    } catch(err) {
+        console.error(err);
+        alert("Something went wrong!");
+    }
+});
+</script>
+</body>
+</html>
