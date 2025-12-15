@@ -44,16 +44,23 @@ def role_required(roles):
 
 
 # ================= LOGIN =================
+# ================= LOGIN =================
 @admin_bp.route("/login", methods=["POST"])
 def admin_login():
     data = request.json
-    admin = mongo.db.admins.find_one({"username": data["username"]})
+    username = data.get("username")
+    password = data.get("password")
 
-    if not admin or not check_password_hash(admin["password_hash"], data["password"]):
+    if not username or not password:
+        return jsonify({"message": "Username and password are required"}), 400
+
+    admin = mongo.db.admins.find_one({"username": username})
+    if not admin or not check_password_hash(admin["password_hash"], password):
         return jsonify({"message": "Invalid credentials"}), 401
 
     token = generate_token(admin)
     return jsonify({"token": token, "role": admin["role"]})
+
 
 
 # ================= VEHICLE =================

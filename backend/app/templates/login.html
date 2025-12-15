@@ -30,9 +30,9 @@ document.getElementById("adminLoginForm").addEventListener("submit", async (e) =
     const data = await res.json();
     
     if(res.ok){
-      localStorage.setItem("token", data.token);  // Save token for auth
+      localStorage.setItem("token", data.token);  // Save JWT token
       alert("Login successful!");
-      window.location.href = "/api/admin/dashboard"; // Redirect to dashboard
+      window.location.href = "/api/admin/dashboard"; // Redirect
     } else {
       alert(data.message);
     }
