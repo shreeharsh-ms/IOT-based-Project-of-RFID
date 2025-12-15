@@ -177,53 +177,49 @@ def date_report():
 
 from datetime import datetime
 @admin_bp.route("/check-expiry", methods=["POST"])
+# @role_required(["ADMIN", "SUPER_ADMIN", "OFFICER"])  # optional for dev
 def check_expiry():
-    data = request.get_json()
-    rfid = data.get("rfid")
+    value = request.json.get("rfid")
+    if not value:
+        return jsonify({"message": "RFID is required"}), 400
 
-    if not rfid:
-        return jsonify({"error": "RFID required"}), 400
-
-    vehicle = mongo.db.vehicles.find_one({"rfid": rfid})
+    vehicle = mongo.db.vehicles.find_one(
+        {"rfid_tag": value},
+        {"_id": 0}
+    )
 
     if not vehicle:
-        return jsonify({"error": "Vehicle not found"}), 404
+        return jsonify({"message": "Vehicle not found"}), 404
 
-    today = datetime.utcnow().date()
+    now = datetime.now()
+    insurance_expired = False
+    puc_expired = False
 
-    insurance_expired = vehicle["insurance_expiry"].date() < today
-    puc_expired = vehicle["puc_expiry"].date() < today
+    try:
+        insurance_expiry = datetime.fromisoformat(vehicle["insurance_expiry"])
+        insurance_expired = insurance_expiry < now
+    except Exception:
+        insurance_expired = None  # invalid format
 
-    fine_imposed = False
+    try:
+        puc_expiry = datetime.fromisoformat(vehicle["puc_expiry"])
+        puc_expired = puc_expiry < now
+    except Exception:
+        puc_expired = None
 
-    # 🔥 AUTO IMPOSE FINE
-    if insurance_expired or puc_expired:
-        fine = {
-            "vehicle_no": vehicle["vehicle_no"],
-            "rfid": rfid,
-            "amount": 500,
-            "reason": "Insurance / PUC Expired",
-            "date": datetime.utcnow()
-        }
-
-        mongo.db.fines.insert_one(fine)
-        fine_imposed = True
-
-        # OPTIONAL: SEND SMS
-        send_sms_via_twilio(
-            vehicle["owner_mobile"],
-            f"Traffic Fine ₹500 imposed for {vehicle['vehicle_no']} due to expired documents."
-        )
-
-    return jsonify({
-        "owner_name": vehicle["owner_name"],
-        "vehicle_no": vehicle["vehicle_no"],
-        "model_no": vehicle["model_no"],
+    response = {
+        "vehicle_no": vehicle.get("vehicle_no"),
+        "model_no": vehicle.get("model_no"),  # <-- added
+        "owner_name": vehicle.get("owner_name"),
+        "rfid_tag": vehicle.get("rfid_tag"),
+        "insurance_expiry": vehicle.get("insurance_expiry"),
+        "puc_expiry": vehicle.get("puc_expiry"),
         "insurance_expired": insurance_expired,
         "puc_expired": puc_expired,
-        "fine_imposed": fine_imposed
-    }), 200
+        "mobile_number": vehicle.get("mobile_number")
+    }
 
+    return jsonify(response)
 
 
 
