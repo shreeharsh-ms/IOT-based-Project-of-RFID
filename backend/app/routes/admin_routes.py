@@ -6,41 +6,55 @@ from datetime import datetime, timedelta
 
 from app.services.auth_service import verify_token, generate_token
 from werkzeug.security import check_password_hash
-from flask import render_template
+from flask import render_template, request, jsonify, redirect, url_for
+
 
 import secrets
 
 admin_bp = Blueprint("admin", __name__)
-
-# # ================= ROLE DECORATOR =================
-# def role_required(roles):
-#     def decorator(f):
-#         @wraps(f)
-#         def wrapper(*args, **kwargs):
-#             token = request.headers.get("Authorization")
-#             payload = verify_token(token)
-#             if not payload or payload["role"] not in roles:
-#                 return jsonify({"message": "Unauthorized"}), 403
-#             return f(*args, **kwargs)
-#         return wrapper
-#     return decorator
+from functools import wraps
+# ================= ROLE DECORATOR =================
 def role_required(roles):
     def decorator(f):
         @wraps(f)
         def wrapper(*args, **kwargs):
+            token = request.headers.get("Authorization")  # or from cookie/session
+            if not token:
+                # Not logged in → redirect to login page
+                return redirect(url_for("admin.admin_login_page"))  # create a GET login page route
 
-            # 🔥 TEMP AUTH BYPASS (DEV MODE)
+            payload = verify_token(token)
+            if not payload:
+                # Invalid token → redirect to login
+                return redirect(url_for("admin.admin_login_page"))
+
+            if payload["role"] not in roles:
+                # Logged in but not authorized → 403
+                return jsonify({"message": "Unauthorized"}), 403
+
+            # Authorized → proceed
             return f(*args, **kwargs)
-
-            # ===== RE-ENABLE LATER =====
-            # token = request.headers.get("Authorization")
-            # payload = verify_token(token)
-            # if not payload or payload["role"] not in roles:
-            #     return jsonify({"message": "Unauthorized"}), 403
-            # return f(*args, **kwargs)
 
         return wrapper
     return decorator
+
+# def role_required(roles):
+#     def decorator(f):
+#         @wraps(f)
+#         def wrapper(*args, **kwargs):
+
+#             # 🔥 TEMP AUTH BYPASS (DEV MODE)
+#             return f(*args, **kwargs)
+
+#             # ===== RE-ENABLE LATER =====
+#             # token = request.headers.get("Authorization")
+#             # payload = verify_token(token)
+#             # if not payload or payload["role"] not in roles:
+#             #     return jsonify({"message": "Unauthorized"}), 403
+#             # return f(*args, **kwargs)
+
+#         return wrapper
+#     return decorator
 
 
 # ================= LOGIN =================
@@ -353,3 +367,8 @@ def get_vehicle(vehicle_id):
 def dashboard_page():
     # Optional: pass data if needed
     return render_template("dashboard.html")
+
+
+@admin_bp.route("/login", methods=["GET"])
+def admin_login_page():
+    return render_template("login.html")
