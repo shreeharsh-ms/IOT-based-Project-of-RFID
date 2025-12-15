@@ -29,13 +29,17 @@ document.getElementById("adminLoginForm").addEventListener("submit", async (e) =
 
     const data = await res.json();
     
-    if(res.ok){
-      localStorage.setItem("token", data.token);  // Save JWT token
-      alert("Login successful!");
-      window.location.href = "/api/admin/dashboard"; // Redirect
-    } else {
-      alert(data.message);
-    }
+if(res.ok){
+  const token = data.token;
+  localStorage.setItem("token", token);  // Save JWT token
+  alert("Login successful!");
+
+  // Redirect to dashboard and pass token as query param
+  window.location.href = `/api/admin/dashboard?token=${token}`;
+} else {
+  alert(data.message);
+}
+
   } catch(err) {
     console.error(err);
     alert("Something went wrong!");

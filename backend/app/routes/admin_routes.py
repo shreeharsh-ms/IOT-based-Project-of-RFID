@@ -30,10 +30,11 @@ def role_required(roles):
     def decorator(f):
         @wraps(f)
         def wrapper(*args, **kwargs):
+            # Check token in headers OR query param
             token = request.headers.get("Authorization") or request.args.get("token")
             payload = verify_token(token)
             if not payload or payload.get("role") not in roles:
-                # If accessed from browser, redirect to login page
+                # Redirect browser to login if token invalid/missing
                 return redirect(url_for("admin.login_page"))
             return f(*args, **kwargs)
         return wrapper
