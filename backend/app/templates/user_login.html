@@ -703,13 +703,18 @@ function validateMobile(mobile) {
     return /^[0-9]{10}$/.test(mobile);
 }
 
-        // Validate mobile number
-        function validateMobile(mobile) {
-            // Remove non-digits and check length
-            const digits = mobile.replace(/\D/g, '');
-            return digits.length === 10;
-        }
+// Add this function to your JavaScript
+function validateRFID(rfid) {
+    // RFID should be alphanumeric with optional hyphens
+    return /^[A-Za-z0-9\-]+$/.test(rfid) && rfid.length >= 6;
+}
 
+// Also add validateMobile function if it's missing
+function validateMobile(mobile) {
+    // Remove any non-digits and check length
+    const digits = mobile.replace(/\D/g, '');
+    return digits.length === 10;
+}
         // Handle form submission
         loginForm.addEventListener('submit', async (e) => {
             e.preventDefault();
