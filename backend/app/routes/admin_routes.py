@@ -24,21 +24,18 @@ admin_bp = Blueprint("admin", __name__)
 #             return f(*args, **kwargs)
 #         return wrapper
 #     return decorator
+from flask import redirect, url_for
+
 def role_required(roles):
     def decorator(f):
         @wraps(f)
         def wrapper(*args, **kwargs):
-
-            # 🔥 TEMP AUTH BYPASS (DEV MODE)
+            token = request.headers.get("Authorization") or request.args.get("token")
+            payload = verify_token(token)
+            if not payload or payload.get("role") not in roles:
+                # If accessed from browser, redirect to login page
+                return redirect(url_for("admin.login_page"))
             return f(*args, **kwargs)
-
-            # ===== RE-ENABLE LATER =====
-            # token = request.headers.get("Authorization")
-            # payload = verify_token(token)
-            # if not payload or payload["role"] not in roles:
-            #     return jsonify({"message": "Unauthorized"}), 403
-            # return f(*args, **kwargs)
-
         return wrapper
     return decorator
 
@@ -357,9 +354,10 @@ def get_vehicle(vehicle_id):
 
 
 @admin_bp.route("/dashboard", methods=["GET"])
+@role_required(["ADMIN", "SUPER_ADMIN"])
 def dashboard_page():
-    # Optional: pass data if needed
     return render_template("dashboard.html")
+
 
 # Serve login page
 @admin_bp.route("/login-page", methods=["GET"])
