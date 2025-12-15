@@ -202,11 +202,40 @@ from datetime import datetime
 import secrets
 from datetime import datetime
 
-# Twilio placeholder
-def send_sms_via_twilio(mobile_number, message):
-    print(f"[Twilio Placeholder] Sending SMS to {mobile_number}: {message}")
-    # Later: integrate Twilio API here
+from twilio.rest import Client
 
+def send_sms_via_twilio(mobile_number, message):
+    """
+    TEMPORARY: Hardcoded Twilio credentials (for testing only)
+    """
+
+    try:
+        # 🔴 TEMPORARY HARDCODED VALUES
+        account_sid = "AC6e105a79612959f9d2cfb7b2d3534984"
+        auth_token = "7caa2a208bcfd17f8352a6e29688c2bc"
+        twilio_number = "+13048026706"
+
+        client = Client(account_sid, auth_token)
+
+        # Ensure phone number format
+        to_number = (
+            f"+91{mobile_number}"
+            if not mobile_number.startswith("+")
+            else mobile_number
+        )
+
+        msg = client.messages.create(
+            body=message,
+            from_=twilio_number,
+            to=to_number
+        )
+
+        print("[Twilio] SMS sent successfully. SID:", msg.sid)
+        return True
+
+    except Exception as e:
+        print("[Twilio ERROR]:", str(e))
+        return False
 
 # User login page (RFID + phone)
 @admin_bp.route("/user/login-page", methods=["GET"])
