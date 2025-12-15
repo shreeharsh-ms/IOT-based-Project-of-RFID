@@ -1,51 +1,731 @@
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>Admin Login | RFID Fleet Manager</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Roboto:wght@300;400;500&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #4361ee;
+            --primary-dark: #3a56d4;
+            --secondary-color: #3f37c9;
+            --success-color: #4cc9f0;
+            --danger-color: #f72585;
+            --warning-color: #f8961e;
+            --dark-color: #212529;
+            --light-color: #f8f9fa;
+            --gray-color: #6c757d;
+            --gray-light: #e9ecef;
+            --border-radius: 12px;
+            --box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
+            --box-shadow-hover: 0 12px 40px rgba(0, 0, 0, 0.18);
+            --transition: all 0.3s ease;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: var(--dark-color);
+            line-height: 1.6;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        /* Animated Background */
+        .bg-particles {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            overflow: hidden;
+        }
+
+        .particle {
+            position: absolute;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            animation: float 15s infinite linear;
+        }
+
+        @keyframes float {
+            0% { transform: translateY(0) translateX(0); }
+            50% { transform: translateY(-20px) translateX(20px); }
+            100% { transform: translateY(0) translateX(0); }
+        }
+
+        /* Login Container */
+        .login-container {
+            width: 100%;
+            max-width: 450px;
+            animation: slideInUp 0.8s ease;
+        }
+
+        @keyframes slideInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Logo */
+        .logo {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .logo-icon {
+            font-size: 48px;
+            color: white;
+            background: rgba(255, 255, 255, 0.2);
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 20px;
+            backdrop-filter: blur(10px);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .logo-text {
+            font-size: 28px;
+            font-weight: 700;
+            color: white;
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+            margin-bottom: 10px;
+        }
+
+        .logo-subtext {
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 16px;
+        }
+
+        /* Login Card */
+        .login-card {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: var(--border-radius);
+            padding: 40px;
+            box-shadow: var(--box-shadow);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .login-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .login-title {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--dark-color);
+            margin-bottom: 10px;
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .login-subtitle {
+            color: var(--gray-color);
+            font-size: 14px;
+        }
+
+        /* Form */
+        .form-group {
+            margin-bottom: 25px;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: var(--dark-color);
+            font-size: 14px;
+        }
+
+        .input-group {
+            position: relative;
+        }
+
+        .input-icon {
+            position: absolute;
+            left: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--gray-color);
+            font-size: 18px;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 16px 16px 16px 50px;
+            border-radius: 10px;
+            border: 2px solid var(--gray-light);
+            font-family: 'Poppins', sans-serif;
+            font-size: 15px;
+            transition: var(--transition);
+            background: white;
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.2);
+        }
+
+        .form-control::placeholder {
+            color: var(--gray-color);
+            opacity: 0.7;
+        }
+
+        /* Button */
+        .btn {
+            width: 100%;
+            padding: 16px;
+            border-radius: 10px;
+            font-weight: 600;
+            cursor: pointer;
+            border: none;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            font-family: 'Poppins', sans-serif;
+            font-size: 16px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn:before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: 0.5s;
+        }
+
+        .btn:hover:before {
+            left: 100%;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+            color: white;
+            box-shadow: 0 4px 15px rgba(67, 97, 238, 0.3);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(67, 97, 238, 0.4);
+        }
+
+        .btn-icon {
+            font-size: 18px;
+        }
+
+        /* Message */
+        .message {
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            display: none;
+            align-items: center;
+            gap: 12px;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .message.error {
+            background-color: rgba(231, 76, 60, 0.15);
+            color: #c0392b;
+            border-left: 4px solid #c0392b;
+        }
+
+        .message.success {
+            background-color: rgba(46, 204, 113, 0.15);
+            color: #27ae60;
+            border-left: 4px solid #27ae60;
+        }
+
+        .message.info {
+            background-color: rgba(52, 152, 219, 0.15);
+            color: #2980b9;
+            border-left: 4px solid #2980b9;
+        }
+
+        .message-icon {
+            font-size: 20px;
+        }
+
+        /* Loading */
+        .loading {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            padding: 15px;
+            display: none;
+        }
+
+        .loading-spinner {
+            width: 20px;
+            height: 20px;
+            border: 3px solid var(--gray-light);
+            border-top: 3px solid var(--primary-color);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Footer */
+        .login-footer {
+            text-align: center;
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid var(--gray-light);
+        }
+
+        .footer-text {
+            color: var(--gray-color);
+            font-size: 14px;
+        }
+
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--primary-color);
+            text-decoration: none;
+            font-weight: 500;
+            margin-top: 15px;
+            transition: var(--transition);
+        }
+
+        .back-link:hover {
+            color: var(--primary-dark);
+            gap: 12px;
+        }
+
+        /* Password Toggle */
+        .password-toggle {
+            position: absolute;
+            right: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            color: var(--gray-color);
+            cursor: pointer;
+            font-size: 18px;
+            padding: 4px;
+            transition: var(--transition);
+        }
+
+        .password-toggle:hover {
+            color: var(--primary-color);
+        }
+
+        /* Responsive */
+        @media (max-width: 500px) {
+            .login-container {
+                padding: 0 15px;
+            }
+            
+            .login-card {
+                padding: 30px 25px;
+            }
+            
+            .logo-icon {
+                width: 70px;
+                height: 70px;
+                font-size: 36px;
+            }
+            
+            .logo-text {
+                font-size: 24px;
+            }
+            
+            .login-title {
+                font-size: 22px;
+            }
+        }
+
+        /* Animation for success */
+        @keyframes successCheckmark {
+            0% {
+                transform: scale(0);
+                opacity: 0;
+            }
+            50% {
+                transform: scale(1.2);
+            }
+            100% {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
+        .success-checkmark {
+            animation: successCheckmark 0.5s ease;
+        }
+    </style>
 </head>
 <body>
-    <form id="adminLoginForm">
-  <input type="text" id="username" placeholder="Username" required>
-  <input type="password" id="password" placeholder="Password" required>
-  <button type="submit">Login</button>
-</form>
+    <!-- Animated Background -->
+    <div class="bg-particles" id="particles"></div>
 
-<script>
-const API_BASE = "https://iot-based-project-of-rfid.vercel.app/api/admin";
+    <div class="login-container">
+        <!-- Logo -->
+        <div class="logo">
+            <div class="logo-icon">
+                <i class="fas fa-user-shield"></i>
+            </div>
+            <h1 class="logo-text">Admin Portal</h1>
+            <p class="logo-subtext">RFID Fleet Management System</p>
+        </div>
 
-document.getElementById("adminLoginForm").addEventListener("submit", async (e) => {
-  e.preventDefault();
-  
-  const username = document.getElementById("username").value;
-  const password = document.getElementById("password").value;
-  
-  try {
-    const res = await fetch(`${API_BASE}/login`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ username, password })
-    });
+        <!-- Login Card -->
+        <div class="login-card">
+            <!-- Header -->
+            <div class="login-header">
+                <h2 class="login-title">Administrator Login</h2>
+                <p class="login-subtitle">Enter your credentials to access the dashboard</p>
+            </div>
 
-    const data = await res.json();
-    
-if(res.ok){
-  const token = data.token;
-  localStorage.setItem("token", token);  // Save JWT token
-  alert("Login successful!");
+            <!-- Message Display -->
+            <div class="message" id="message">
+                <i class="fas message-icon" id="messageIcon"></i>
+                <span id="messageText"></span>
+            </div>
 
-  // Redirect to dashboard and pass token as query param
-  window.location.href = `/api/admin/dashboard?token=${token}`;
-} else {
-  alert(data.message);
-}
+            <!-- Loading Indicator -->
+            <div class="loading" id="loading">
+                <div class="loading-spinner"></div>
+                <span>Authenticating...</span>
+            </div>
 
-  } catch(err) {
-    console.error(err);
-    alert("Something went wrong!");
-  }
-});
-</script>
+            <!-- Login Form -->
+            <form id="adminLoginForm">
+                <!-- Username Field -->
+                <div class="form-group">
+                    <label class="form-label" for="username">Username</label>
+                    <div class="input-group">
+                        <div class="input-icon">
+                            <i class="fas fa-user"></i>
+                        </div>
+                        <input 
+                            type="text" 
+                            id="username" 
+                            class="form-control" 
+                            placeholder="Enter your username" 
+                            required
+                            autocomplete="username"
+                            autofocus
+                        >
+                    </div>
+                </div>
 
+                <!-- Password Field -->
+                <div class="form-group">
+                    <label class="form-label" for="password">Password</label>
+                    <div class="input-group">
+                        <div class="input-icon">
+                            <i class="fas fa-lock"></i>
+                        </div>
+                        <input 
+                            type="password" 
+                            id="password" 
+                            class="form-control" 
+                            placeholder="Enter your password" 
+                            required
+                            autocomplete="current-password"
+                        >
+                        <button type="button" class="password-toggle" id="passwordToggle">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Submit Button -->
+                <button type="submit" class="btn btn-primary" id="submitBtn">
+                    <i class="fas fa-sign-in-alt btn-icon"></i>
+                    Login to Dashboard
+                </button>
+            </form>
+
+            <!-- Footer -->
+            <div class="login-footer">
+                <p class="footer-text">
+                    <i class="fas fa-shield-alt" style="color: var(--primary-color); margin-right: 8px;"></i>
+                    Secure access to fleet management system
+                </p>
+                <a href="/" class="back-link">
+                    <i class="fas fa-arrow-left"></i>
+                    Back to Home Page
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE = "https://iot-based-project-of-rfid.vercel.app/api/admin";
+        
+        // DOM Elements
+        const loginForm = document.getElementById('adminLoginForm');
+        const usernameInput = document.getElementById('username');
+        const passwordInput = document.getElementById('password');
+        const passwordToggle = document.getElementById('passwordToggle');
+        const submitBtn = document.getElementById('submitBtn');
+        const loading = document.getElementById('loading');
+        const message = document.getElementById('message');
+        const messageIcon = document.getElementById('messageIcon');
+        const messageText = document.getElementById('messageText');
+        const particlesContainer = document.getElementById('particles');
+
+        // Create animated background particles
+        function createParticles() {
+            const particleCount = 15;
+            
+            for (let i = 0; i < particleCount; i++) {
+                const particle = document.createElement('div');
+                particle.classList.add('particle');
+                
+                const size = Math.random() * 15 + 5;
+                particle.style.width = `${size}px`;
+                particle.style.height = `${size}px`;
+                particle.style.left = `${Math.random() * 100}%`;
+                particle.style.top = `${Math.random() * 100}%`;
+                particle.style.animationDelay = `${Math.random() * 15}s`;
+                particle.style.opacity = Math.random() * 0.3 + 0.1;
+                
+                particlesContainer.appendChild(particle);
+            }
+        }
+
+        // Toggle password visibility
+        passwordToggle.addEventListener('click', function() {
+            const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+            passwordInput.setAttribute('type', type);
+            
+            // Toggle icon
+            this.innerHTML = type === 'password' ? 
+                '<i class="fas fa-eye"></i>' : 
+                '<i class="fas fa-eye-slash"></i>';
+        });
+
+        // Show message
+        function showMessage(text, type) {
+            messageText.textContent = text;
+            message.className = `message ${type}`;
+            
+            // Set icon based on message type
+            switch(type) {
+                case 'error':
+                    messageIcon.className = 'fas fa-exclamation-circle message-icon';
+                    break;
+                case 'success':
+                    messageIcon.className = 'fas fa-check-circle message-icon success-checkmark';
+                    break;
+                case 'info':
+                    messageIcon.className = 'fas fa-info-circle message-icon';
+                    break;
+            }
+            
+            message.style.display = 'flex';
+            
+            // Auto-hide success messages after 5 seconds
+            if (type === 'success') {
+                setTimeout(() => {
+                    message.style.display = 'none';
+                }, 5000);
+            }
+        }
+
+        // Show loading state
+        function setLoading(isLoading) {
+            if (isLoading) {
+                loading.style.display = 'flex';
+                submitBtn.style.display = 'none';
+                message.style.display = 'none';
+            } else {
+                loading.style.display = 'none';
+                submitBtn.style.display = 'flex';
+            }
+        }
+
+        // Handle form submission
+        loginForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const username = usernameInput.value.trim();
+            const password = passwordInput.value;
+            
+            // Basic validation
+            if (!username || !password) {
+                showMessage('Please fill in all fields', 'error');
+                return;
+            }
+            
+            // Show loading state
+            setLoading(true);
+            
+            try {
+                const response = await fetch(`${API_BASE}/login`, {
+                    method: 'POST',
+                    headers: { 
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json'
+                    },
+                    body: JSON.stringify({ username, password })
+                });
+
+                const data = await response.json();
+                
+                if (response.ok) {
+                    const token = data.token;
+                    const role = data.role || 'ADMIN';
+                    
+                    // Save to localStorage
+                    localStorage.setItem('token', token);
+                    localStorage.setItem('role', role);
+                    localStorage.setItem('username', username);
+                    
+                    // Show success message
+                    showMessage('Login successful! Redirecting to dashboard...', 'success');
+                    
+                    // Change button to success state
+                    submitBtn.innerHTML = `
+                        <i class="fas fa-check btn-icon success-checkmark"></i>
+                        Login Successful
+                    `;
+                    submitBtn.style.background = 'linear-gradient(135deg, #2ecc71 0%, #27ae60 100%)';
+                    
+                    // Redirect after delay
+                    setTimeout(() => {
+                        // Redirect to dashboard (using query parameter for token)
+                        window.location.href = `/api/admin/dashboard?token=${token}`;
+                    }, 1500);
+                    
+                } else {
+                    // Handle error
+                    const errorMessage = data.message || 'Invalid username or password';
+                    showMessage(errorMessage, 'error');
+                    setLoading(false);
+                    
+                    // Shake animation for error
+                    loginForm.style.animation = 'shake 0.5s';
+                    setTimeout(() => {
+                        loginForm.style.animation = '';
+                    }, 500);
+                }
+                
+            } catch (error) {
+                console.error('Login error:', error);
+                showMessage('Network error. Please check your connection.', 'error');
+                setLoading(false);
+            }
+        });
+
+        // Add shake animation for errors
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes shake {
+                0%, 100% { transform: translateX(0); }
+                10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
+                20%, 40%, 60%, 80% { transform: translateX(5px); }
+            }
+            
+            @keyframes ripple {
+                to {
+                    transform: scale(4);
+                    opacity: 0;
+                }
+            }
+        `;
+        document.head.appendChild(style);
+
+        // Add ripple effect to submit button
+        submitBtn.addEventListener('click', function(e) {
+            const rect = this.getBoundingClientRect();
+            const size = Math.max(rect.width, rect.height);
+            const x = e.clientX - rect.left - size / 2;
+            const y = e.clientY - rect.top - size / 2;
+            
+            const ripple = document.createElement('span');
+            ripple.style.cssText = `
+                position: absolute;
+                border-radius: 50%;
+                background: rgba(255, 255, 255, 0.5);
+                transform: scale(0);
+                animation: ripple 0.6s linear;
+                width: ${size}px;
+                height: ${size}px;
+                top: ${y}px;
+                left: ${x}px;
+                pointer-events: none;
+            `;
+            
+            this.appendChild(ripple);
+            
+            setTimeout(() => {
+                ripple.remove();
+            }, 600);
+        });
+
+        // Auto-focus username field on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            usernameInput.focus();
+            createParticles();
+            
+            // Check if there's a token in localStorage already
+            const existingToken = localStorage.getItem('token');
+            if (existingToken) {
+                showMessage('You are already logged in. Redirecting...', 'info');
+                setTimeout(() => {
+                    window.location.href = `/api/admin/dashboard?token=${existingToken}`;
+                }, 2000);
+            }
+        });
+
+        // Handle Enter key to submit form
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter' && !loading.style.display === 'flex') {
+                loginForm.dispatchEvent(new Event('submit'));
+            }
+        });
+    </script>
 </body>
 </html>

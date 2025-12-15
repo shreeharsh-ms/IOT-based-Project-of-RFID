@@ -1,45 +1,937 @@
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>User Login</title>
+    <title>User Login | RFID Fleet Manager</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Roboto:wght@300;400;500&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #4361ee;
+            --primary-dark: #3a56d4;
+            --secondary-color: #4cc9f0;
+            --success-color: #2ecc71;
+            --danger-color: #f72585;
+            --warning-color: #f8961e;
+            --dark-color: #212529;
+            --light-color: #f8f9fa;
+            --gray-color: #6c757d;
+            --gray-light: #e9ecef;
+            --border-radius: 12px;
+            --box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
+            --box-shadow-hover: 0 12px 40px rgba(0, 0, 0, 0.18);
+            --transition: all 0.3s ease;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #4cc9f0 0%, #4361ee 100%);
+            color: var(--dark-color);
+            line-height: 1.6;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        /* Animated Background */
+        .bg-particles {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            overflow: hidden;
+        }
+
+        .particle {
+            position: absolute;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            animation: float 15s infinite linear;
+        }
+
+        @keyframes float {
+            0% { transform: translateY(0) translateX(0); }
+            50% { transform: translateY(-20px) translateX(20px); }
+            100% { transform: translateY(0) translateX(0); }
+        }
+
+        /* Login Container */
+        .login-container {
+            width: 100%;
+            max-width: 450px;
+            animation: slideInUp 0.8s ease;
+        }
+
+        @keyframes slideInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Logo */
+        .logo {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .logo-icon {
+            font-size: 48px;
+            color: white;
+            background: rgba(255, 255, 255, 0.2);
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 20px;
+            backdrop-filter: blur(10px);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .logo-text {
+            font-size: 28px;
+            font-weight: 700;
+            color: white;
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+            margin-bottom: 10px;
+        }
+
+        .logo-subtext {
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 16px;
+        }
+
+        /* Login Card */
+        .login-card {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: var(--border-radius);
+            padding: 40px;
+            box-shadow: var(--box-shadow);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .login-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .login-title {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--dark-color);
+            margin-bottom: 10px;
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .login-subtitle {
+            color: var(--gray-color);
+            font-size: 14px;
+        }
+
+        /* Form */
+        .form-group {
+            margin-bottom: 25px;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: var(--dark-color);
+            font-size: 14px;
+        }
+
+        .input-group {
+            position: relative;
+        }
+
+        .input-icon {
+            position: absolute;
+            left: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--gray-color);
+            font-size: 18px;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 16px 16px 16px 50px;
+            border-radius: 10px;
+            border: 2px solid var(--gray-light);
+            font-family: 'Poppins', sans-serif;
+            font-size: 15px;
+            transition: var(--transition);
+            background: white;
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: var(--secondary-color);
+            box-shadow: 0 0 0 3px rgba(76, 201, 240, 0.2);
+        }
+
+        .form-control::placeholder {
+            color: var(--gray-color);
+            opacity: 0.7;
+        }
+
+        /* Info Text */
+        .info-text {
+            background: rgba(76, 201, 240, 0.1);
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 25px;
+            border-left: 4px solid var(--secondary-color);
+        }
+
+        .info-text p {
+            color: var(--gray-color);
+            font-size: 13px;
+            line-height: 1.6;
+            margin-bottom: 5px;
+        }
+
+        .info-text p:last-child {
+            margin-bottom: 0;
+        }
+
+        .info-icon {
+            color: var(--secondary-color);
+            margin-right: 8px;
+        }
+
+        /* Button */
+        .btn {
+            width: 100%;
+            padding: 16px;
+            border-radius: 10px;
+            font-weight: 600;
+            cursor: pointer;
+            border: none;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            font-family: 'Poppins', sans-serif;
+            font-size: 16px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn:before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: 0.5s;
+        }
+
+        .btn:hover:before {
+            left: 100%;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--secondary-color) 0%, #3ab4d8 100%);
+            color: white;
+            box-shadow: 0 4px 15px rgba(76, 201, 240, 0.3);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(76, 201, 240, 0.4);
+        }
+
+        .btn-icon {
+            font-size: 18px;
+        }
+
+        /* Message */
+        .message {
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            display: none;
+            align-items: center;
+            gap: 12px;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .message.error {
+            background-color: rgba(231, 76, 60, 0.15);
+            color: #c0392b;
+            border-left: 4px solid #c0392b;
+        }
+
+        .message.success {
+            background-color: rgba(46, 204, 113, 0.15);
+            color: #27ae60;
+            border-left: 4px solid #27ae60;
+        }
+
+        .message.info {
+            background-color: rgba(52, 152, 219, 0.15);
+            color: #2980b9;
+            border-left: 4px solid #2980b9;
+        }
+
+        .message-icon {
+            font-size: 20px;
+        }
+
+        /* Loading */
+        .loading {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            padding: 15px;
+            display: none;
+        }
+
+        .loading-spinner {
+            width: 20px;
+            height: 20px;
+            border: 3px solid var(--gray-light);
+            border-top: 3px solid var(--secondary-color);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Footer */
+        .login-footer {
+            text-align: center;
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid var(--gray-light);
+        }
+
+        .footer-text {
+            color: var(--gray-color);
+            font-size: 14px;
+        }
+
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--secondary-color);
+            text-decoration: none;
+            font-weight: 500;
+            margin-top: 15px;
+            transition: var(--transition);
+        }
+
+        .back-link:hover {
+            color: #3ab4d8;
+            gap: 12px;
+        }
+
+        /* Help Section */
+        .help-section {
+            margin-top: 20px;
+            padding: 15px;
+            background: rgba(248, 249, 250, 0.8);
+            border-radius: 8px;
+            border: 1px solid var(--gray-light);
+        }
+
+        .help-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--dark-color);
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .help-text {
+            font-size: 13px;
+            color: var(--gray-color);
+            line-height: 1.5;
+        }
+
+        /* Responsive */
+        @media (max-width: 500px) {
+            .login-container {
+                padding: 0 15px;
+            }
+            
+            .login-card {
+                padding: 30px 25px;
+            }
+            
+            .logo-icon {
+                width: 70px;
+                height: 70px;
+                font-size: 36px;
+            }
+            
+            .logo-text {
+                font-size: 24px;
+            }
+            
+            .login-title {
+                font-size: 22px;
+            }
+        }
+
+        /* Animation for success */
+        @keyframes successCheckmark {
+            0% {
+                transform: scale(0);
+                opacity: 0;
+            }
+            50% {
+                transform: scale(1.2);
+            }
+            100% {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
+        .success-checkmark {
+            animation: successCheckmark 0.5s ease;
+        }
+
+        /* QR Code Scanner */
+        .qr-scanner-section {
+            text-align: center;
+            margin-bottom: 25px;
+        }
+
+        .qr-scanner-btn {
+            background: rgba(76, 201, 240, 0.1);
+            border: 2px dashed var(--secondary-color);
+            color: var(--secondary-color);
+            padding: 15px;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            font-weight: 500;
+        }
+
+        .qr-scanner-btn:hover {
+            background: rgba(76, 201, 240, 0.2);
+            transform: translateY(-2px);
+        }
+
+        .qr-scanner-icon {
+            font-size: 20px;
+        }
+    </style>
 </head>
 <body>
-    <form id="userLoginForm">
-        <input type="text" id="rfid" placeholder="RFID" required>
-        <input type="text" id="mobile_number" placeholder="Mobile Number" required>
-        <button type="submit">Login</button>
-    </form>
+    <!-- Animated Background -->
+    <div class="bg-particles" id="particles"></div>
 
-<script>
-const API_BASE = "https://iot-based-project-of-rfid.vercel.app/api/admin";
+    <div class="login-container">
+        <!-- Logo -->
+        <div class="logo">
+            <div class="logo-icon">
+                <i class="fas fa-car"></i>
+            </div>
+            <h1 class="logo-text">Vehicle Owner Portal</h1>
+            <p class="logo-subtext">Check & Pay Your Vehicle Fines</p>
+        </div>
 
-document.getElementById("userLoginForm").addEventListener("submit", async (e) => {
-    e.preventDefault();
+        <!-- Login Card -->
+        <div class="login-card">
+            <!-- Header -->
+            <div class="login-header">
+                <h2 class="login-title">Vehicle Owner Login</h2>
+                <p class="login-subtitle">Enter your RFID tag and mobile number to access your fines</p>
+            </div>
 
-    const rfid = document.getElementById("rfid").value;
-    const mobile_number = document.getElementById("mobile_number").value;
+            <!-- Info Text -->
+            <div class="info-text">
+                <p><i class="fas fa-info-circle info-icon"></i> Enter the RFID tag associated with your vehicle and registered mobile number.</p>
+                <p><i class="fas fa-shield-alt info-icon"></i> Your information is secure and encrypted.</p>
+            </div>
 
-    try {
-        const res = await fetch(`${API_BASE}/user/login`, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ rfid, mobile_number })
+            <!-- Message Display -->
+            <div class="message" id="message">
+                <i class="fas message-icon" id="messageIcon"></i>
+                <span id="messageText"></span>
+            </div>
+
+            <!-- Loading Indicator -->
+            <div class="loading" id="loading">
+                <div class="loading-spinner"></div>
+                <span>Verifying your credentials...</span>
+            </div>
+
+            <!-- Login Form -->
+            <form id="userLoginForm">
+                <!-- RFID Field -->
+                <div class="form-group">
+                    <label class="form-label" for="rfid">
+                        <i class="fas fa-id-card"></i> RFID Tag
+                    </label>
+                    <div class="input-group">
+                        <div class="input-icon">
+                            <i class="fas fa-tag"></i>
+                        </div>
+                        <input 
+                            type="text" 
+                            id="rfid" 
+                            class="form-control" 
+                            placeholder="Enter your RFID tag number" 
+                            required
+                            autocomplete="off"
+                            pattern="[A-Za-z0-9\-]+"
+                            title="Enter valid RFID tag (letters, numbers, hyphens)"
+                        >
+                    </div>
+                </div>
+
+                <!-- Mobile Number Field -->
+                <div class="form-group">
+                    <label class="form-label" for="mobile_number">
+                        <i class="fas fa-mobile-alt"></i> Mobile Number
+                    </label>
+                    <div class="input-group">
+                        <div class="input-icon">
+                            <i class="fas fa-phone"></i>
+                        </div>
+                        <input 
+                            type="tel" 
+                            id="mobile_number" 
+                            class="form-control" 
+                            placeholder="Enter your 10-digit mobile number" 
+                            required
+                            pattern="[0-9]{10}"
+                            title="Enter 10-digit mobile number"
+                            maxlength="10"
+                            oninput="this.value = this.value.replace(/[^0-9]/g, '').slice(0, 10)"
+                        >
+                    </div>
+                </div>
+
+                <!-- Submit Button -->
+                <button type="submit" class="btn btn-primary" id="submitBtn">
+                    <i class="fas fa-sign-in-alt btn-icon"></i>
+                    View My Fines
+                </button>
+            </form>
+
+            <!-- Help Section -->
+            <div class="help-section">
+                <div class="help-title">
+                    <i class="fas fa-question-circle" style="color: var(--secondary-color);"></i>
+                    Need Help?
+                </div>
+                <div class="help-text">
+                    Your RFID tag is located on your vehicle's windshield. If you don't have it, contact your vehicle registration authority.
+                </div>
+            </div>
+
+            <!-- Footer -->
+            <div class="login-footer">
+                <p class="footer-text">
+                    <i class="fas fa-lock" style="color: var(--secondary-color); margin-right: 8px;"></i>
+                    Secure access to your vehicle information
+                </p>
+                <a href="/" class="back-link">
+                    <i class="fas fa-arrow-left"></i>
+                    Back to Home Page
+                </a>
+                <div style="margin-top: 15px;">
+                    <a href="#" class="back-link" style="font-size: 13px;" onclick="showForgotRFID()">
+                        <i class="fas fa-key"></i>
+                        Forgot RFID Tag?
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Forgot RFID Modal (Hidden by default) -->
+    <div id="forgotRFIDModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000; align-items: center; justify-content: center;">
+        <div style="background: white; padding: 30px; border-radius: var(--border-radius); max-width: 400px; width: 90%;">
+            <h3 style="margin-bottom: 15px; color: var(--dark-color);">
+                <i class="fas fa-key" style="color: var(--secondary-color); margin-right: 10px;"></i>
+                Forgot RFID Tag?
+            </h3>
+            <p style="color: var(--gray-color); margin-bottom: 20px; font-size: 14px;">
+                Please contact the vehicle registration authority or system administrator to retrieve your RFID tag information.
+            </p>
+            <div style="background: rgba(76, 201, 240, 0.1); padding: 15px; border-radius: 8px; margin-bottom: 20px;">
+                <p style="font-size: 13px; color: var(--dark-color); margin-bottom: 5px;">
+                    <strong>Contact Support:</strong>
+                </p>
+                <p style="font-size: 13px; color: var(--gray-color);">
+                    <i class="fas fa-phone" style="margin-right: 8px;"></i> 1800-XXX-XXXX<br>
+                    <i class="fas fa-envelope" style="margin-right: 8px;"></i> support@rfidfleet.com
+                </p>
+            </div>
+            <button onclick="hideForgotRFID()" style="width: 100%; padding: 12px; background: var(--gray-light); border: none; border-radius: 8px; color: var(--dark-color); font-weight: 500; cursor: pointer;">
+                Close
+            </button>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE = "https://iot-based-project-of-rfid.vercel.app/api/admin";
+        
+        // DOM Elements
+        const loginForm = document.getElementById('userLoginForm');
+        const rfidInput = document.getElementById('rfid');
+        const mobileInput = document.getElementById('mobile_number');
+        const submitBtn = document.getElementById('submitBtn');
+        const loading = document.getElementById('loading');
+        const message = document.getElementById('message');
+        const messageIcon = document.getElementById('messageIcon');
+        const messageText = document.getElementById('messageText');
+        const particlesContainer = document.getElementById('particles');
+        const forgotModal = document.getElementById('forgotRFIDModal');
+
+        // Create animated background particles
+        function createParticles() {
+            const particleCount = 15;
+            
+            for (let i = 0; i < particleCount; i++) {
+                const particle = document.createElement('div');
+                particle.classList.add('particle');
+                
+                const size = Math.random() * 15 + 5;
+                particle.style.width = `${size}px`;
+                particle.style.height = `${size}px`;
+                particle.style.left = `${Math.random() * 100}%`;
+                particle.style.top = `${Math.random() * 100}%`;
+                particle.style.animationDelay = `${Math.random() * 15}s`;
+                particle.style.opacity = Math.random() * 0.3 + 0.1;
+                
+                particlesContainer.appendChild(particle);
+            }
+        }
+
+        // Show message
+        function showMessage(text, type) {
+            messageText.textContent = text;
+            message.className = `message ${type}`;
+            
+            // Set icon based on message type
+            switch(type) {
+                case 'error':
+                    messageIcon.className = 'fas fa-exclamation-circle message-icon';
+                    break;
+                case 'success':
+                    messageIcon.className = 'fas fa-check-circle message-icon success-checkmark';
+                    break;
+                case 'info':
+                    messageIcon.className = 'fas fa-info-circle message-icon';
+                    break;
+            }
+            
+            message.style.display = 'flex';
+            
+            // Auto-hide success messages after 5 seconds
+            if (type === 'success') {
+                setTimeout(() => {
+                    message.style.display = 'none';
+                }, 5000);
+            }
+        }
+
+        // Show loading state
+        function setLoading(isLoading) {
+            if (isLoading) {
+                loading.style.display = 'flex';
+                submitBtn.style.display = 'none';
+                message.style.display = 'none';
+            } else {
+                loading.style.display = 'none';
+                submitBtn.style.display = 'flex';
+            }
+        }
+
+        // Format mobile number as user types
+        mobileInput.addEventListener('input', function(e) {
+            let value = e.target.value.replace(/\D/g, '');
+            if (value.length > 10) value = value.slice(0, 10);
+            
+            // Format as XXX-XXX-XXXX
+            if (value.length > 6) {
+                value = `${value.slice(0, 3)}-${value.slice(3, 6)}-${value.slice(6)}`;
+            } else if (value.length > 3) {
+                value = `${value.slice(0, 3)}-${value.slice(3)}`;
+            }
+            
+            e.target.value = value;
         });
 
-        const data = await res.json();
-
-        if(res.ok){
-            localStorage.setItem("user_token", data.token); // Save user token
-            window.location.href = data.redirect_url; // Redirect to fines page
-        } else {
-            alert(data.message);
+        // Validate RFID format
+        function validateRFID(rfid) {
+            // RFID should be alphanumeric with optional hyphens
+            return /^[A-Za-z0-9\-]+$/.test(rfid) && rfid.length >= 6;
         }
-    } catch(err) {
-        console.error(err);
-        alert("Something went wrong!");
-    }
-});
-</script>
+
+        // Validate mobile number
+        function validateMobile(mobile) {
+            // Remove non-digits and check length
+            const digits = mobile.replace(/\D/g, '');
+            return digits.length === 10;
+        }
+
+        // Handle form submission
+        loginForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            let rfid = rfidInput.value.trim().toUpperCase();
+            let mobile = mobileInput.value;
+            
+            // Remove formatting from mobile for API call
+            const mobileDigits = mobile.replace(/\D/g, '');
+            
+            // Validation
+            if (!validateRFID(rfid)) {
+                showMessage('Please enter a valid RFID tag (minimum 6 characters, alphanumeric)', 'error');
+                rfidInput.focus();
+                return;
+            }
+            
+            if (!validateMobile(mobile)) {
+                showMessage('Please enter a valid 10-digit mobile number', 'error');
+                mobileInput.focus();
+                return;
+            }
+            
+            // Show loading state
+            setLoading(true);
+            
+            try {
+                const response = await fetch(`${API_BASE}/user/login`, {
+                    method: 'POST',
+                    headers: { 
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json'
+                    },
+                    body: JSON.stringify({ 
+                        rfid: rfid,
+                        mobile_number: mobileDigits 
+                    })
+                });
+
+                const data = await response.json();
+                
+                if (response.ok) {
+                    const token = data.token;
+                    const redirectUrl = data.redirect_url;
+                    
+                    // Save user token to localStorage
+                    localStorage.setItem('user_token', token);
+                    localStorage.setItem('user_rfid', rfid);
+                    localStorage.setItem('user_mobile', mobileDigits);
+                    
+                    // Show success message
+                    showMessage('Login successful! Redirecting to fines page...', 'success');
+                    
+                    // Change button to success state
+                    submitBtn.innerHTML = `
+                        <i class="fas fa-check btn-icon success-checkmark"></i>
+                        Login Successful
+                    `;
+                    submitBtn.style.background = 'linear-gradient(135deg, #2ecc71 0%, #27ae60 100%)';
+                    
+                    // Redirect after delay
+                    setTimeout(() => {
+                        if (redirectUrl) {
+                            window.location.href = redirectUrl;
+                        } else {
+                            // Fallback to default fines page with token
+                            window.location.href = `/frontend/user/fine.html?token=${token}`;
+                        }
+                    }, 1500);
+                    
+                } else {
+                    // Handle error
+                    const errorMessage = data.message || 'Invalid RFID or mobile number';
+                    showMessage(errorMessage, 'error');
+                    setLoading(false);
+                    
+                    // Shake animation for error
+                    loginForm.style.animation = 'shake 0.5s';
+                    setTimeout(() => {
+                        loginForm.style.animation = '';
+                    }, 500);
+                    
+                    // Clear password field on error
+                    mobileInput.value = '';
+                    mobileInput.focus();
+                }
+                
+            } catch (error) {
+                console.error('Login error:', error);
+                showMessage('Network error. Please check your connection.', 'error');
+                setLoading(false);
+            }
+        });
+
+        // Add shake animation for errors
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes shake {
+                0%, 100% { transform: translateX(0); }
+                10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
+                20%, 40%, 60%, 80% { transform: translateX(5px); }
+            }
+            
+            @keyframes ripple {
+                to {
+                    transform: scale(4);
+                    opacity: 0;
+                }
+            }
+        `;
+        document.head.appendChild(style);
+
+        // Add ripple effect to submit button
+        submitBtn.addEventListener('click', function(e) {
+            const rect = this.getBoundingClientRect();
+            const size = Math.max(rect.width, rect.height);
+            const x = e.clientX - rect.left - size / 2;
+            const y = e.clientY - rect.top - size / 2;
+            
+            const ripple = document.createElement('span');
+            ripple.style.cssText = `
+                position: absolute;
+                border-radius: 50%;
+                background: rgba(255, 255, 255, 0.5);
+                transform: scale(0);
+                animation: ripple 0.6s linear;
+                width: ${size}px;
+                height: ${size}px;
+                top: ${y}px;
+                left: ${x}px;
+                pointer-events: none;
+            `;
+            
+            this.appendChild(ripple);
+            
+            setTimeout(() => {
+                ripple.remove();
+            }, 600);
+        });
+
+        // Auto-focus RFID field on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            rfidInput.focus();
+            createParticles();
+            
+            // Check if there's a user token in localStorage already
+            const existingToken = localStorage.getItem('user_token');
+            if (existingToken) {
+                showMessage('You are already logged in. Redirecting...', 'info');
+                setTimeout(() => {
+                    window.location.href = `/frontend/user/fine.html?token=${existingToken}`;
+                }, 2000);
+            }
+            
+            // Try to auto-fill from localStorage
+            const savedRFID = localStorage.getItem('user_rfid');
+            const savedMobile = localStorage.getItem('user_mobile');
+            
+            if (savedRFID) {
+                rfidInput.value = savedRFID;
+            }
+            
+            if (savedMobile) {
+                // Format the mobile number
+                const formatted = savedMobile.replace(/(\d{3})(\d{3})(\d{4})/, '$1-$2-$3');
+                mobileInput.value = formatted;
+            }
+        });
+
+        // Handle Enter key to submit form
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter' && !loading.style.display === 'flex') {
+                loginForm.dispatchEvent(new Event('submit'));
+            }
+        });
+
+        // Show forgot RFID modal
+        function showForgotRFID() {
+            forgotModal.style.display = 'flex';
+        }
+
+        // Hide forgot RFID modal
+        function hideForgotRFID() {
+            forgotModal.style.display = 'none';
+        }
+
+        // Close modal when clicking outside
+        forgotModal.addEventListener('click', function(e) {
+            if (e.target === forgotModal) {
+                hideForgotRFID();
+            }
+        });
+
+        // Add autocomplete suggestions for RFID (from localStorage history)
+        const rfidHistory = JSON.parse(localStorage.getItem('rfid_history') || '[]');
+        
+        // When form submits successfully, add to history
+        loginForm.addEventListener('submit', function() {
+            const rfid = rfidInput.value.trim().toUpperCase();
+            if (rfid && !rfidHistory.includes(rfid)) {
+                rfidHistory.unshift(rfid);
+                if (rfidHistory.length > 5) rfidHistory.pop();
+                localStorage.setItem('rfid_history', JSON.stringify(rfidHistory));
+            }
+        });
+
+        // Add click to copy RFID hint
+        rfidInput.addEventListener('click', function() {
+            if (rfidHistory.length > 0 && !this.value) {
+                showMessage(`Previous RFID used: ${rfidHistory[0]}`, 'info');
+                setTimeout(() => {
+                    message.style.display = 'none';
+                }, 3000);
+            }
+        });
+    </script>
 </body>
 </html>
