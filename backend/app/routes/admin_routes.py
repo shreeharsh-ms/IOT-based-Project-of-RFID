@@ -235,7 +235,7 @@ def send_sms_via_twilio(mobile_number, message):
 
         # 🔴 TEMPORARY HARDCODED VALUES
         account_sid = "AC6e105a79612959f9d2cfb7b2d3534984"
-        auth_token = "5f944bf943704e6801a3358f4dfb4d7b"
+        auth_token = "4bbc75505cd8f7d5e0dc8f2415e7f534"
         twilio_number = "+13048026706"
 
         print("➡️ Account SID loaded:", account_sid[:6] + "****")
@@ -275,6 +275,7 @@ def send_sms_via_twilio(mobile_number, message):
         print("❌ Error message:", str(e))
         print("================ TWILIO DEBUG END ================\n")
         return False
+
 
 @admin_bp.route("/impose-fine", methods=["POST"])
 def impose_fine():
