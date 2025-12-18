@@ -212,8 +212,8 @@ def send_sms_via_twilio(mobile_number, message):
         print("➡️ Type of mobile_number:", type(mobile_number))
 
         # 🔴 TEMPORARY HARDCODED VALUES
-        account_sid = "AC6e105a79612959f9d2cfb7b2d3534984"
-        auth_token = "4bbc75505cd8f7d5e0dc8f2415e7f534"
+        account_sid = "AC6ce4fb7e878b36fdb126ef65f498caf2"
+        auth_token = "afa3d88e39867364305ada1c9226a0ff"
         twilio_number = "+13048026706"
 
         print("➡️ Account SID loaded:", account_sid[:6] + "****")
